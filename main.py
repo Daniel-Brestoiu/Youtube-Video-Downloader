@@ -33,6 +33,8 @@ def query(search_item):
 
 
 def find_videos_in_playlist():
+    """Finds specific, existing playlist where I put youtube video songs I liked.
+    Returns video Id for each of the videos in a list."""
     playlist = youtube.playlistItems().list(part = "contentDetails",  playlistId = "PL4y8ZuWSzyRRTt3i-XujOg7NYX72XV8MG").execute()
 
     videos_list = []

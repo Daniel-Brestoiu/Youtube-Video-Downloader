@@ -1,4 +1,7 @@
 import os
+import subprocess
+from pathlib import Path
+from typing import List
 
 """
 Control of youtube-dl
@@ -7,20 +10,18 @@ Control of youtube-dl
 """
 
 
-
-def download_videos(unique_codes_list):
+def download_videos(unique_codes_list: List[str]) -> None:
     """Given a list of unique video codes, downloads them all using the download_video(video_code, format = "mp4") function."""
     for x in unique_codes_list:
-        download_video(video_code = str(x))
+        assert type(x) == str, "Improper code."
+        download_video(video_code=x)
+        
+def download_video(video_code: str, format: str = "mp4") -> None:
+    """
+    Uses youtube-dl library to download a youtube video given the unique code for the youtube video.
+    Default format type is mp4.
+    :param video_code: The YouTube video ID you want to download
+    """
 
-def download_video(video_code, format = "mp4"):
-    """Uses youtube-dl library to download a youtube video given the unique code for the youtube video.
-    Default format type is mp4."""
-
-    command = "youtube-dl -o '/Users/daniel/Desktop/Music/%(title)s.%(ext)s' -f {}/best 'https://www.youtube.com/watch?v={}'".format(str(format),str(video_code))
-    os.system(command)
-
-
-if __name__ == "__main__":
-    pass
+    subprocess.run(["youtube-dl", "-o", f'{Path.home()}/Desktop/Music/%(title)s.%(ext)s', "-f", f"{format}/best", f"https://www.youtube.com/watch?v={video_code}"])
 

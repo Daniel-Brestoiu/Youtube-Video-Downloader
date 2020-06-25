@@ -1,0 +1,4 @@
+__pycache__/
+downloads.txt
+*.pyc
+*.code-workspace

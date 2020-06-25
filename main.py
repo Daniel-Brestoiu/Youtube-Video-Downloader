@@ -22,6 +22,7 @@ youtube = build("youtube", "v3", developerKey=API_key)
 def query(search_item):
     """ Search youtube for input parameter.
         Returns list of 5 results and their video IDs,"""
+        
     request = youtube.search().list(q=str(search_item), 
                                     part="snippet",
                                     type="video")  # type --> googleapiclient.http.HttpRequest

@@ -50,9 +50,23 @@ def open_file(file_name):
 
 def check_file_codes(file_handle):
     # Check lines from file 
-    # Compare video codes in video list, delete thoses in both lists
-    # Create new unique_codes list
+    # If video_code matches, add code to array of matched codes
+    # Return array of matched codes
     pass
 
+def write_to_file(file_handle, text):
+    # Write text to file
+    pass
+
+def cull_codes(video_codes, matched_codes):
+    """Given two lists of strings, where the second list is a subset of the first, returns the first list without the subset."""
+
+    for x in matched_codes:
+        index = video_codes.index(x)
+        video_codes.pop(index)
+    
+    return (video_codes)
+
+
 if __name__ == "__main__":
-    print(find_videos_in_playlist())
+    download_videos(find_videos_in_playlist())

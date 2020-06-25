@@ -85,9 +85,8 @@ def cull_codes(video_codes, downloaded_codes):
 
 def find_unique_codes(new_video_codes):
     """Given list, returns a subset of the list which does not contain duplicates from a known file, downloads.txt"""
-    
-    unique_codes = cull_codes(
-        new_video_codes, check_file_codes("downloads.txt"))
+
+    unique_codes = cull_codes(new_video_codes, check_file_codes("downloads.txt"))
     return (unique_codes)
 
 

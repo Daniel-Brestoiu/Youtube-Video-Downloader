@@ -43,30 +43,58 @@ def find_videos_in_playlist():
 
     return(videos_list)
 
-def open_file(file_name):
-    # Create file if not existant, else open file in read+write mode 
-    # Attach to a file handle and return 
-    pass
+def check_file_codes(file_name):
+    """Opens or Creates a file named after input parameter. 
+    Reads the lines of the file, returning list of enter separated lines."""
+    try:
+        handle = open(str(file_name), "r")
+    except:
+        new_file = open(str(file_name), "x")
+        new_file.close()
+        print("Made new file.")
+        handle = open(str(file_name), "r")
+    
+    file_contents = handle.readlines()
 
-def check_file_codes(file_handle):
-    # Check lines from file 
-    # If video_code matches, add code to array of matched codes
-    # Return array of matched codes
-    pass
+    downloaded_codes = []
+    for line in file_contents:
+        downloaded_codes.append(line.rstrip())
+    
+    handle.close()
 
-def write_to_file(file_handle, text):
-    # Write text to file
-    pass
+    return(downloaded_codes)
 
-def cull_codes(video_codes, matched_codes):
+
+def cull_codes(video_codes, downloaded_codes):
     """Given two lists of strings, where the second list is a subset of the first, returns the first list without the subset."""
 
-    for x in matched_codes:
-        index = video_codes.index(x)
-        video_codes.pop(index)
-    
-    return (video_codes)
+    unique_codes = []
 
+    for x in video_codes:
+        if x not in downloaded_codes:
+            unique_codes.append(x)
+        
+    return (unique_codes)
+
+
+def find_unique_codes(new_video_codes):
+    """Given list, returns a subset of the list which does not contain duplicates from a known file, downloads.txt"""
+    unique_codes = cull_codes(new_video_codes, check_file_codes("downloads.txt"))
+    return (unique_codes)
+
+
+def write_to_file(file_name, codes_list):
+    """Given file name and a list, appends to the file all items in the list as a string."""
+    
+    file_handle = open(str(file_name), "a")
+
+    for _ in codes_list:
+        file_handle.write(_ + "\n")
+    
+    file_handle.close()
 
 if __name__ == "__main__":
-    download_videos(find_videos_in_playlist())
+    codes = find_unique_codes(find_videos_in_playlist())
+    write_to_file("downloads.txt", codes)
+    download_videos(codes)
+   

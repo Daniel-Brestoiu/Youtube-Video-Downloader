@@ -1,6 +1,6 @@
 import googleapiclient
 from googleapiclient.discovery import build
-
+from ffmpeg_script import download_videos
 
 """
 To Do:
@@ -43,7 +43,16 @@ def find_videos_in_playlist():
 
     return(videos_list)
 
+def open_file(file_name):
+    # Create file if not existant, else open file in read+write mode 
+    # Attach to a file handle and return 
+    pass
 
+def check_file_codes(file_handle):
+    # Check lines from file 
+    # Compare video codes in video list, delete thoses in both lists
+    # Create new unique_codes list
+    pass
 
 if __name__ == "__main__":
     print(find_videos_in_playlist())

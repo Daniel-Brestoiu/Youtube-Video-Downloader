@@ -25,3 +25,6 @@ def download_video(video_code: str, format: str = "mp4") -> None:
 
     subprocess.run(["youtube-dl", "-o", f'{Path.home()}/Desktop/Music/%(title)s.%(ext)s', "-f", f"{format}/best", f"https://www.youtube.com/watch?v={video_code}"])
 
+
+if __name__ == "__main__":
+    download_video("")

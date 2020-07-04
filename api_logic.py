@@ -95,6 +95,7 @@ def write_to_file(file_name: str, codes_list: List[str]) -> None:
 
     file_handle = open(file_name, "a")
 
+    file_handle.write("\n")
     for x in codes_list:
         file_handle.write(x + "\n")
 

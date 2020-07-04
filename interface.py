@@ -9,7 +9,7 @@ from typing import List, Tuple
 
 root = tkinter.Tk()
 
-def init_screen():
+def init_screen()  -> None:
     """Creates the general screen of app"""
 
     root.title("Youtube Video Downloader")

@@ -24,9 +24,10 @@ def init_screen() -> None:
     tkinter.Label(root, text = "Youtube API Key").place(x= 5, y = 10)
     tkinter.Label(root, text = "Download Location").place(x = 5, y = 50)
 
-    API_input = tkinter.Entry(root, width = 35).place(x = 130, y = 10)
-    download_path = tkinter.Entry(root, width = 35).place(x= 130, y = 50)
+    tkinter.Entry(root, name = "api_input", width = 35).place(x = 130, y = 10)
+    tkinter.Entry(root, name = "path", width = 35).place(x= 130, y = 50)
     #Creating necessary entry input fields
+
 
 def mode_buttons() -> None:
     """Creates the Radiobuttons which control search types"""
@@ -60,20 +61,34 @@ def show_mode() -> None:
         youtube_search_screen()
 
 def video_search_screen():
-    pass
+    print("Video search screen")
+
 def playlist_search_screen():
-    pass
+    print("Playlist Search Screen")
+
 def youtube_search_screen():
-    pass
+    print("Youtube Search Screen")
 
 
-    
+def test_button():
+    tkinter.Button(root, text = "test", command = clean_up).place(x= 400, y = 400)
+
+def clean_up():
+    print(find_widgets_by_name("api_input").get())
+
+
+def find_widgets_by_name(name: str):
+    return root.children[name]
 
 
 
-if __name__ == "__main__":
+def main():
     init_screen()
 
+    test_button()
     mode_buttons()
 
     root.mainloop()
+
+if __name__ == "__main__":
+    main()

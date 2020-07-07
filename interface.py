@@ -9,8 +9,11 @@ from functools import partial
 global search_type
 
 root = tkinter.Tk()
+canvas = tkinter.Canvas(root, width = 485, height = 300, )
+canvas.place(x = 5, y= 135)
 
 search_type = tkinter.IntVar()
+search_type.set(1)
 
 def init_screen() -> None:
     """Creates the general screen of app"""
@@ -30,6 +33,7 @@ def init_screen() -> None:
     #Creating necessary entry input fields
 
 
+#Different search mode fellas
 def mode_buttons() -> None:
     """Creates the Radiobuttons which control search types"""
     global search_type
@@ -60,25 +64,56 @@ def show_mode() -> None:
         youtube_search_screen()
 
 def video_search_screen():
-    print("Video search screen")
+    """Changes canvas to video search mode"""
+    canvas.delete("all")
+    canvas["background"] = "#A9EDFF"
+    
 
 def playlist_search_screen():
-    print("Playlist Search Screen")
+    """Changes canvas to playlist search mode"""
+    canvas.delete("all")
+    canvas["background"] = "#09ff00"
+    
 
 def youtube_search_screen():
-    print("Youtube Search Screen")
+    """Changes canvas to general youtube search mode"""
+    canvas.delete("all")
+    canvas["background"] = "#ff0000"
+    
 
 
+#Download button and his homie functions
+def download_button():
+    tkinter.Button(root, text = "DOWNLOAD", name = "download", width = 50, height = 2, 
+                    command = partial(download, key = retrieve_key, path = retrieve_path, video = retrieve_video)).place(x = 25, y = 450)
+
+def download(key: str, path: str, video: str) -> None:
+    print("download complete :)")
+    print(key, path, video)
+
+def retrieve_key() -> str:
+    """Retrieves the input from API Input entry field"""
+    return find_widgets_by_name("api_input").get()
+
+def retrieve_path() -> str:
+    """Retrieves the input from download path entry field"""
+    return find_widgets_by_name("path").get()
+
+def retrieve_video():
+    pass
+
+def find_widgets_by_name(name: str):
+    return root.children[name]
+
+
+
+
+#Experiment bois
 def test_button():
     def print_widget(name: str):
         print(find_widgets_by_name(name).get())
 
-    tkinter.Button(root, text = "test", command = partial(print_widget, name = "api_input")).place(x= 400, y = 400)
-
-
-
-def find_widgets_by_name(name: str):
-    return root.children[name]
+    tkinter.Button(root, text = "test", command = partial(print_widget, name = "api_input")).place(x= 400, y = 100)
 
 
 def enumyrate(iterable: Iterable):
@@ -87,11 +122,15 @@ def enumyrate(iterable: Iterable):
         yield counter, x
         counter +=1
 
+
+#The main man :DD
 def main():
     init_screen()
 
     test_button()
     mode_buttons()
+    show_mode()
+    download_button()
 
     root.mainloop()
 

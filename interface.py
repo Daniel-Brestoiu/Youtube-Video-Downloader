@@ -84,23 +84,28 @@ def youtube_search_screen():
 
 #Download button and his homie functions
 def download_button():
+
+    def download() -> None:
+        key = retrieve_key()
+        path = retrieve_path()
+        video = retrieve_video()
+
+        print(key, path, video)
+
+    def retrieve_key() -> str:
+        """Retrieves the input from API Input entry field"""
+        
+        return str(find_widgets_by_name("api_input").get())
+
+    def retrieve_path() -> str:
+        """Retrieves the input from download path entry field"""
+        return str(find_widgets_by_name("path").get())
+
+    def retrieve_video():
+        pass
+
     tkinter.Button(root, text = "DOWNLOAD", name = "download", width = 50, height = 2, 
-                    command = partial(download, key = retrieve_key, path = retrieve_path, video = retrieve_video)).place(x = 25, y = 450)
-
-def download(key: str, path: str, video: str) -> None:
-    print("download complete :)")
-    print(key, path, video)
-
-def retrieve_key() -> str:
-    """Retrieves the input from API Input entry field"""
-    return find_widgets_by_name("api_input").get()
-
-def retrieve_path() -> str:
-    """Retrieves the input from download path entry field"""
-    return find_widgets_by_name("path").get()
-
-def retrieve_video():
-    pass
+                    command = download).place(x = 25, y = 450)
 
 def find_widgets_by_name(name: str):
     return root.children[name]

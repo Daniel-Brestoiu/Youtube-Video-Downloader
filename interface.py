@@ -5,8 +5,11 @@ import ffmpeg_script
 import typing
 from typing import List, Tuple, Iterable
 from functools import partial
+from PIL import Image, ImageTk
 
 global search_type
+global photo
+photo = Image.open("placeholder_image.png")
 
 root = tkinter.Tk()
 canvas = tkinter.Canvas(root, width = 485, height = 300, )
@@ -65,8 +68,18 @@ def show_mode() -> None:
 
 def video_search_screen():
     """Changes canvas to video search mode"""
+    global photo
+
     canvas.delete("all")
     canvas["background"] = "#A9EDFF"
+
+    scale = 100
+    photo = resize_image("placeholder_image.png", scale, scale)
+    thumbnail_placeholder = canvas.create_image((scale/2 + 5,scale/2 + 5), image = photo)
+
+    canvas.update()
+
+
     
 
 def playlist_search_screen():
@@ -113,6 +126,15 @@ def find_widgets_by_name(name: str):
     return root.children[name]
 
 
+def resize_image(image_location: str, height: int, width: int):
+    image = tkinter.PhotoImage(file = image_location)
+
+    w_scale = int(int(image.width())/width)
+    h_scale = int(int(image.height())/height)
+
+    new_image = image.subsample(w_scale,h_scale)
+
+    return new_image
 
 
 #Experiment bois

@@ -3,7 +3,8 @@ import api_logic
 import ffmpeg_script
 
 import typing
-from typing import List, Tuple
+from typing import List, Tuple, Iterable
+from functools import partial
 
 global search_type
 
@@ -39,10 +40,10 @@ def mode_buttons() -> None:
         ("Search", 3),
       ]
 
-    for val, mode  in enumerate(modes):
-        x_pos = 10 + (100*(int(val)))
-        tkinter.Radiobutton(root, text = mode[0], padx = 1, pady = 5, indicatoron = 0, 
-                            variable = search_type, width = 10, value = mode[1], 
+    for val, (button_name, button_ID)  in enumerate(modes):
+        x_pos = 10 + (100*(val))
+        tkinter.Radiobutton(root, text = button_name, padx = 1, pady = 5, indicatoron = 0, 
+                            variable = search_type, width = 10, value = button_ID, 
                             command = lambda: show_mode()).place(x = x_pos, y = 100)
 
 def show_mode() -> None:
@@ -53,10 +54,8 @@ def show_mode() -> None:
 
     if selected_mode == 1:
         video_search_screen()
-    
     elif selected_mode == 2:
         playlist_search_screen()
-
     elif selected_mode == 3:
         youtube_search_screen()
 
@@ -71,16 +70,22 @@ def youtube_search_screen():
 
 
 def test_button():
-    tkinter.Button(root, text = "test", command = clean_up).place(x= 400, y = 400)
+    def print_widget(name: str):
+        print(find_widgets_by_name(name).get())
 
-def clean_up():
-    print(find_widgets_by_name("api_input").get())
+    tkinter.Button(root, text = "test", command = partial(print_widget, name = "api_input")).place(x= 400, y = 400)
+
 
 
 def find_widgets_by_name(name: str):
     return root.children[name]
 
 
+def enumyrate(iterable: Iterable):
+    counter = 0
+    for x in iterable:
+        yield counter, x
+        counter +=1
 
 def main():
     init_screen()

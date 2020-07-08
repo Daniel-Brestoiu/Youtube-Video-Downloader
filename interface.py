@@ -1,9 +1,12 @@
 import tkinter
-import api_logic
 import ffmpeg_script
+
+import api_logic
+from api_logic import search_video
 
 import typing
 from typing import List, Tuple, Iterable
+
 from functools import partial
 from PIL import Image, ImageTk
 
@@ -12,7 +15,7 @@ global photo
 photo = Image.open("placeholder_image.png")
 
 root = tkinter.Tk()
-canvas = tkinter.Canvas(root, width = 485, height = 300, )
+canvas = tkinter.Canvas(root, name = "canvas", width = 485, height = 300, )
 canvas.place(x = 5, y= 135)
 
 search_type = tkinter.IntVar()
@@ -70,6 +73,20 @@ def video_search_screen():
     """Changes canvas to video search mode"""
     global photo
 
+    def search():
+        video_id = get_video_id()
+        video_link = get_video_link()
+
+        search_video(video_id = video_id, video_link = video_link)
+        #Find Video name, Channel Name, download thumbnail and give path to download
+
+    def get_video_id() -> str:
+        return find_canvas_widget_by_name("video id").get()
+
+    def get_video_link() -> str:
+        return find_canvas_widget_by_name("video link").get()
+
+
     canvas.delete("all")
     clear_canvas()
 
@@ -86,15 +103,16 @@ def video_search_screen():
     tkinter.Label(canvas, name = "youtuber of video label", text = "No channel posted this video", bg = "#A9EDFF", width = 38, anchor = "w").place(x = 125, y = 65)
     tkinter.Label(canvas, name = "instructions label", text = "Provide inputs then click search. Download if correct video is found.", bg = "#A9EDFF", anchor = "w").place(x = 20, y = 220)
 
-    tkinter.Entry(canvas, name = "video id", text = "video id", width = 40).place(x = 100, y = 115)
-    tkinter.Entry(canvas, name = "video link", text = "video link", width = 40).place(x = 100, y = 155)
+    tkinter.Entry(canvas, name = "video id", width = 40).place(x = 100, y = 115)
+    tkinter.Entry(canvas, name = "video link", width = 40).place(x = 100, y = 155)
 
-    tkinter.Button(canvas, name = "search by video button", text = "SEARCH", width = 50, height = 2,).place(x= 20, y = 250)
+    tkinter.Button(canvas, name = "search by video button", text = "SEARCH", width = 50, height = 2, 
+                    command = search).place(x= 20, y = 250)
 
     canvas.update()
 
 
-    
+
 
 def playlist_search_screen():
     """Changes canvas to playlist search mode"""
@@ -158,6 +176,8 @@ def find_widgets_by_name(name: str):
     """Returns the widget that was named in input."""
     return root.children[name]
 
+def find_canvas_widget_by_name(name:str):
+    return root.children["canvas"].children[name]
 
 def resize_image(image_location: str, height: int, width: int):
     image = tkinter.PhotoImage(file = image_location)

@@ -101,6 +101,26 @@ def write_to_file(file_name: str, codes_list: List[str]) -> None:
 
     file_handle.close()
 
+def search_video(video_id: str, video_link: str):
+    """Given a youtube video identifier, finds the video in question.
+    Downloads the video thumbnail as image
+    Returns the Video Name, Channel name, thumbnail image name/location?"""
+
+    if len(video_id) == 11:
+        #Probably a video ID. 
+        probable_video_link = "https://www.youtube.com/watch?v=" + video_id
+    
+    else:
+        print("Invalid video ID")
+
+    
+
+    
+    
+
+
+
+
 def main() -> None:
     codes = find_unique_codes(find_videos_in_playlist("PL4y8ZuWSzyRRTt3i-XujOg7NYX72XV8MG"))
     write_to_file("downloads.txt", codes)

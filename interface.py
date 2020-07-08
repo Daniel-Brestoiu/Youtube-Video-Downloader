@@ -31,8 +31,8 @@ def init_screen() -> None:
     tkinter.Label(root, text = "Youtube API Key").place(x= 5, y = 10)
     tkinter.Label(root, text = "Download Location").place(x = 5, y = 50)
 
-    tkinter.Entry(root, name = "api_input", width = 35).place(x = 130, y = 10)
-    tkinter.Entry(root, name = "path", width = 35).place(x= 130, y = 50)
+    tkinter.Entry(root, name = "api_input", width = 39).place(x = 130, y = 10)
+    tkinter.Entry(root, name = "path", width = 39).place(x= 130, y = 50)
     #Creating necessary entry input fields
 
 
@@ -71,11 +71,25 @@ def video_search_screen():
     global photo
 
     canvas.delete("all")
+    clear_canvas()
+
     canvas["background"] = "#A9EDFF"
 
     scale = 100
     photo = resize_image("placeholder_image.png", scale, scale)
     thumbnail_placeholder = canvas.create_image((scale/2 + 5,scale/2 + 5), image = photo)
+
+
+    tkinter.Label(canvas, name = "video id label", text = "Video ID:", width = 10, anchor = "w", bg = "#A9EDFF",).place(x = 17, y = 114)
+    tkinter.Label(canvas, name = "video link label", text = "Video Link:", width = 10, anchor = "w", bg = "#A9EDFF",).place(x= 17, y = 154) 
+    tkinter.Label(canvas, name = "video found label", text = "No Video Searched Yet", bg = "#A9EDFF", width = 38, anchor = "w",).place(x =125, y = 35)
+    tkinter.Label(canvas, name = "youtuber of video label", text = "No channel posted this video", bg = "#A9EDFF", width = 38, anchor = "w").place(x = 125, y = 65)
+    tkinter.Label(canvas, name = "instructions label", text = "Provide inputs then click search. Download if correct video is found.", bg = "#A9EDFF", anchor = "w").place(x = 20, y = 220)
+
+    tkinter.Entry(canvas, name = "video id", text = "video id", width = 40).place(x = 100, y = 115)
+    tkinter.Entry(canvas, name = "video link", text = "video link", width = 40).place(x = 100, y = 155)
+
+    tkinter.Button(canvas, name = "search by video button", text = "SEARCH", width = 50, height = 2,).place(x= 20, y = 250)
 
     canvas.update()
 
@@ -84,15 +98,34 @@ def video_search_screen():
 
 def playlist_search_screen():
     """Changes canvas to playlist search mode"""
+    
     canvas.delete("all")
+    clear_canvas()
+
     canvas["background"] = "#09ff00"
+    
+    
+    
+    canvas.update()
     
 
 def youtube_search_screen():
     """Changes canvas to general youtube search mode"""
+    
     canvas.delete("all")
+    clear_canvas()
+    
     canvas["background"] = "#ff0000"
     
+    
+    
+    canvas.update()
+
+def clear_canvas():
+    for child in canvas.winfo_children():
+        child.destroy()
+
+
 
 
 #Download button and his homie functions

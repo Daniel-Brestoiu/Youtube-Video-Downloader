@@ -1,3 +1,4 @@
+import re
 import googleapiclient
 from googleapiclient.discovery import build
 from ffmpeg_script import download_videos
@@ -95,24 +96,48 @@ def write_to_file(file_name: str, codes_list: List[str]) -> None:
 
     file_handle = open(file_name, "a")
 
-    file_handle.write("\n")
     for x in codes_list:
-        file_handle.write(x + "\n")
+        file_handle.write("\n" + x)
 
     file_handle.close()
 
-def search_video(video_id: str, video_link: str):
+def search_video(video_id: str, video_link: str) -> Tuple[str, str]:
     """Given a youtube video identifier, finds the video in question.
     Downloads the video thumbnail as image
     Returns the Video Name, Channel name, thumbnail image name/location?"""
-
-    if len(video_id) == 11:
-        #Probably a video ID. 
-        probable_video_link = "https://www.youtube.com/watch?v=" + video_id
     
-    else:
-        print("Invalid video ID")
+    if len(video_id) != 11:
+        #print("Invalid video ID input. Searching using link information.")
 
+        regex_pattern = r"\="
+        direction, link_id = re.split(regex_pattern, string = video_link)
+        
+        request = YOUTUBE.videos().list(part = "snippet", id = link_id)
+        response = request.execute()
+        
+        title = response["items"][0]["snippet"]["title"]
+        channel_id = response["items"][0]["snippet"]["channelId"]
+
+        response2 = YOUTUBE.channels().list(id = str(channel_id), part = "snippet").execute()
+        channel_name = response2["items"][0]["snippet"]["title"]
+
+        print(title, "by: " , channel_name)
+
+    else:
+        #print("Valid video ID input, searching through video ID.")
+    
+        request = YOUTUBE.videos().list(part = "snippet", id = video_id)
+        response = request.execute()
+        
+        title = response["items"][0]["snippet"]["title"]
+        channel_id = response["items"][0]["snippet"]["channelId"]
+        
+        response2 = YOUTUBE.channels().list(id = str(channel_id), part = "snippet").execute()
+        channel_name = response2["items"][0]["snippet"]["title"]
+
+        print(title, "by: " , channel_name)
+
+    return (title,channel_name)
     
 
     

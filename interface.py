@@ -77,8 +77,12 @@ def video_search_screen():
         video_id = get_video_id()
         video_link = get_video_link()
 
-        search_video(video_id = video_id, video_link = video_link)
-        #Find Video name, Channel Name, download thumbnail and give path to download
+        (title, channel_name) = search_video(video_id = video_id, video_link = video_link)
+
+        find_canvas_widget_by_name("video found label")["text"] = title
+        find_canvas_widget_by_name("youtuber of video label")["text"] = channel_name
+        canvas.update()
+        #Find Video name, Channel Name, download thumbnail and give path to thumbnail
 
     def get_video_id() -> str:
         return find_canvas_widget_by_name("video id").get()
@@ -101,7 +105,7 @@ def video_search_screen():
     tkinter.Label(canvas, name = "video link label", text = "Video Link:", width = 10, anchor = "w", bg = "#A9EDFF",).place(x= 17, y = 154) 
     tkinter.Label(canvas, name = "video found label", text = "No Video Searched Yet", bg = "#A9EDFF", width = 38, anchor = "w",).place(x =125, y = 35)
     tkinter.Label(canvas, name = "youtuber of video label", text = "No channel posted this video", bg = "#A9EDFF", width = 38, anchor = "w").place(x = 125, y = 65)
-    tkinter.Label(canvas, name = "instructions label", text = "Provide inputs then click search. Download if correct video is found.", bg = "#A9EDFF", anchor = "w").place(x = 20, y = 220)
+    tkinter.Label(canvas, name = "instructions label", text = "Provide input then click search. Download if correct video is found.", bg = "#A9EDFF", anchor = "w").place(x = 20, y = 220)
 
     tkinter.Entry(canvas, name = "video id", width = 40).place(x = 100, y = 115)
     tkinter.Entry(canvas, name = "video link", width = 40).place(x = 100, y = 155)

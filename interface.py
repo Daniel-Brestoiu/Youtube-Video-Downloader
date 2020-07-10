@@ -74,13 +74,16 @@ def video_search_screen():
     global photo
 
     def search():
+        global photo
+
         video_id = get_video_id()
         video_link = get_video_link()
 
-        (title, channel_name) = search_video(video_id = video_id, video_link = video_link)
+        title, channel_name, thumbnail_link, thumbnail_width, thumbnail_height = search_video(video_id = video_id, video_link = video_link)
 
         find_canvas_widget_by_name("video found label")["text"] = title
         find_canvas_widget_by_name("youtuber of video label")["text"] = channel_name
+
         canvas.update()
         #Find Video name, Channel Name, download thumbnail and give path to thumbnail
 
@@ -183,6 +186,9 @@ def find_widgets_by_name(name: str):
 def find_canvas_widget_by_name(name:str):
     return root.children["canvas"].children[name]
 
+
+
+#Helpful photo friends
 def resize_image(image_location: str, height: int, width: int):
     image = tkinter.PhotoImage(file = image_location)
 
@@ -192,6 +198,12 @@ def resize_image(image_location: str, height: int, width: int):
     new_image = image.subsample(w_scale,h_scale)
 
     return new_image
+
+def download_to_temp(image_url: str):
+    #Given internet url which has an image, download image and store to temp file.
+    #Also should probably make sure to delete unnecessary temp stuff at the end.
+    pass
+
 
 
 #Experiment bois

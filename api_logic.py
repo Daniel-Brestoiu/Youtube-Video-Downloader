@@ -101,7 +101,7 @@ def write_to_file(file_name: str, codes_list: List[str]) -> None:
 
     file_handle.close()
 
-def search_video(video_id: str, video_link: str) -> Tuple[str, str]:
+def search_video(video_id: str, video_link: str) -> List[str]:
     """Given a youtube video identifier, finds the video in question.
     Downloads the video thumbnail as image
     Returns the Video Name, Channel name, thumbnail image name/location?"""
@@ -114,14 +114,13 @@ def search_video(video_id: str, video_link: str) -> Tuple[str, str]:
         
         request = YOUTUBE.videos().list(part = "snippet", id = link_id)
         response = request.execute()
-        
+
         title = response["items"][0]["snippet"]["title"]
-        channel_id = response["items"][0]["snippet"]["channelId"]
+        channel_name = response["items"][0]["snippet"]["channelTitle"]
 
-        response2 = YOUTUBE.channels().list(id = str(channel_id), part = "snippet").execute()
-        channel_name = response2["items"][0]["snippet"]["title"]
-
-        print(title, "by: " , channel_name)
+        thumbnail_link = response["items"][0]["snippet"]["thumbnails"]["default"]["url"]
+        thumbnail_width = response["items"][0]["snippet"]["thumbnails"]["default"]["width"]
+        thumbnail_height = response["items"][0]["snippet"]["thumbnails"]["default"]["height"]    
 
     else:
         #print("Valid video ID input, searching through video ID.")
@@ -130,14 +129,15 @@ def search_video(video_id: str, video_link: str) -> Tuple[str, str]:
         response = request.execute()
         
         title = response["items"][0]["snippet"]["title"]
-        channel_id = response["items"][0]["snippet"]["channelId"]
-        
-        response2 = YOUTUBE.channels().list(id = str(channel_id), part = "snippet").execute()
-        channel_name = response2["items"][0]["snippet"]["title"]
+        channel_name = response["items"][0]["snippet"]["channelTitle"]
 
-        print(title, "by: " , channel_name)
+        thumbnail_link = response["items"][0]["snippet"]["thumbnails"]["default"]["url"]
+        thumbnail_width = response["items"][0]["snippet"]["thumbnails"]["default"]["width"]
+        thumbnail_height = response["items"][0]["snippet"]["thumbnails"]["default"]["height"]
 
-    return (title,channel_name)
+    #Thumbnail at https://img.youtube.com/vi/<insert-youtube-video-id-here>/default.jpg
+
+    return [title,channel_name, thumbnail_link, thumbnail_width, thumbnail_height]
     
 
     

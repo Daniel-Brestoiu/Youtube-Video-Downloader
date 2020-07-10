@@ -106,13 +106,8 @@ def search_video(video_id: str, video_link: str) -> List[str]:
     Downloads the video thumbnail as image
     Returns the Video Name, Channel name, thumbnail image name/location?"""
     
-    if len(video_id) != 11:
-        #print("Invalid video ID input. Searching using link information.")
-
-        regex_pattern = r"\="
-        direction, link_id = re.split(regex_pattern, string = video_link)
-        
-        request = YOUTUBE.videos().list(part = "snippet", id = link_id)
+    def get_video_info(video_id: str) -> List[str]:
+        request = YOUTUBE.videos().list(part = "snippet", id = video_id)
         response = request.execute()
 
         title = response["items"][0]["snippet"]["title"]
@@ -122,22 +117,28 @@ def search_video(video_id: str, video_link: str) -> List[str]:
         thumbnail_width = response["items"][0]["snippet"]["thumbnails"]["default"]["width"]
         thumbnail_height = response["items"][0]["snippet"]["thumbnails"]["default"]["height"]    
 
+        return [title,channel_name, thumbnail_link, thumbnail_width, thumbnail_height]
+
+
+    if len(video_id) != 11:
+        #print("Invalid video ID input. Searching using link information.")
+
+        regex_pattern = r"\="
+        direction, link_id = re.split(regex_pattern, string = video_link)
+        
+        info = get_video_info(link_id)
+
     else:
         #print("Valid video ID input, searching through video ID.")
     
         request = YOUTUBE.videos().list(part = "snippet", id = video_id)
         response = request.execute()
         
-        title = response["items"][0]["snippet"]["title"]
-        channel_name = response["items"][0]["snippet"]["channelTitle"]
-
-        thumbnail_link = response["items"][0]["snippet"]["thumbnails"]["default"]["url"]
-        thumbnail_width = response["items"][0]["snippet"]["thumbnails"]["default"]["width"]
-        thumbnail_height = response["items"][0]["snippet"]["thumbnails"]["default"]["height"]
+        info = get_video_info(video_id)
 
     #Thumbnail at https://img.youtube.com/vi/<insert-youtube-video-id-here>/default.jpg
 
-    return [title,channel_name, thumbnail_link, thumbnail_width, thumbnail_height]
+    return info
     
 
     

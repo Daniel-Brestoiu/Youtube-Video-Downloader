@@ -1,5 +1,6 @@
 import tkinter
 import ffmpeg_script
+import urllib.request
 
 import api_logic
 from api_logic import search_video
@@ -73,7 +74,7 @@ def video_search_screen():
     """Changes canvas to video search mode"""
     global photo
 
-    def search():
+    def search() -> None:
         global photo
 
         video_id = get_video_id()
@@ -84,8 +85,13 @@ def video_search_screen():
         find_canvas_widget_by_name("video found label")["text"] = title
         find_canvas_widget_by_name("youtuber of video label")["text"] = channel_name
 
+        download_location = download_to_temp(thumbnail_link, title)
+
+        photo = ImageTk.PhotoImage(Image.open(download_location))
+        thumbnail_placeholder = canvas.create_image((scale/2 + 20,scale/2 + 5), image = photo)
+
         canvas.update()
-        #Find Video name, Channel Name, download thumbnail and give path to thumbnail
+        
 
     def get_video_id() -> str:
         return find_canvas_widget_by_name("video id").get()
@@ -104,14 +110,14 @@ def video_search_screen():
     thumbnail_placeholder = canvas.create_image((scale/2 + 5,scale/2 + 5), image = photo)
 
 
-    tkinter.Label(canvas, name = "video id label", text = "Video ID:", width = 10, anchor = "w", bg = "#A9EDFF",).place(x = 17, y = 114)
-    tkinter.Label(canvas, name = "video link label", text = "Video Link:", width = 10, anchor = "w", bg = "#A9EDFF",).place(x= 17, y = 154) 
-    tkinter.Label(canvas, name = "video found label", text = "No Video Searched Yet", bg = "#A9EDFF", width = 38, anchor = "w",).place(x =125, y = 35)
-    tkinter.Label(canvas, name = "youtuber of video label", text = "No channel posted this video", bg = "#A9EDFF", width = 38, anchor = "w").place(x = 125, y = 65)
+    tkinter.Label(canvas, name = "video id label", text = "Video ID:", width = 10, anchor = "w", bg = "#A9EDFF",).place(x = 17, y = 124)
+    tkinter.Label(canvas, name = "video link label", text = "Video Link:", width = 10, anchor = "w", bg = "#A9EDFF",).place(x= 17, y = 164) 
+    tkinter.Label(canvas, name = "video found label", text = "No Video Searched Yet", bg = "#A9EDFF", width = 38, anchor = "w",).place(x =145, y = 25)
+    tkinter.Label(canvas, name = "youtuber of video label", text = "No channel posted this video", bg = "#A9EDFF", width = 38, anchor = "w").place(x = 145, y = 55)
     tkinter.Label(canvas, name = "instructions label", text = "Provide input then click search. Download if correct video is found.", bg = "#A9EDFF", anchor = "w").place(x = 20, y = 220)
 
-    tkinter.Entry(canvas, name = "video id", width = 40).place(x = 100, y = 115)
-    tkinter.Entry(canvas, name = "video link", width = 40).place(x = 100, y = 155)
+    tkinter.Entry(canvas, name = "video id", width = 40).place(x = 100, y = 125)
+    tkinter.Entry(canvas, name = "video link", width = 40).place(x = 100, y = 165)
 
     tkinter.Button(canvas, name = "search by video button", text = "SEARCH", width = 50, height = 2, 
                     command = search).place(x= 20, y = 250)
@@ -199,11 +205,14 @@ def resize_image(image_location: str, height: int, width: int):
 
     return new_image
 
-def download_to_temp(image_url: str):
-    #Given internet url which has an image, download image and store to temp file.
-    #Also should probably make sure to delete unnecessary temp stuff at the end.
-    pass
+def download_to_temp(image_url: str, title: str) -> str:
+    """Given a network object denotated by a URL, downloads to file and returns path to newly downloaded file."""
+    
+    thumbnail_name = "temp thumbnails/" + title + " thumbnail.jpg"
 
+    path, http_message = urllib.request.urlretrieve(url = image_url, filename= thumbnail_name)
+
+    return str(path)
 
 
 #Experiment bois

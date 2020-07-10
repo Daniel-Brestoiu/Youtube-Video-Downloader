@@ -113,7 +113,7 @@ def video_search_screen():
     tkinter.Label(canvas, name = "video id label", text = "Video ID:", width = 10, anchor = "w", bg = "#A9EDFF",).place(x = 17, y = 124)
     tkinter.Label(canvas, name = "video link label", text = "Video Link:", width = 10, anchor = "w", bg = "#A9EDFF",).place(x= 17, y = 164) 
     tkinter.Label(canvas, name = "video found label", text = "No Video Searched Yet", bg = "#A9EDFF", width = 38, anchor = "w",).place(x =145, y = 25)
-    tkinter.Label(canvas, name = "youtuber of video label", text = "No channel posted this video", bg = "#A9EDFF", width = 38, anchor = "w").place(x = 145, y = 55)
+    tkinter.Label(canvas, name = "youtuber of video label", text = "No Channel Posted This Video", bg = "#A9EDFF", width = 38, anchor = "w").place(x = 145, y = 55)
     tkinter.Label(canvas, name = "instructions label", text = "Provide input then click search. Download if correct video is found.", bg = "#A9EDFF", anchor = "w").place(x = 20, y = 220)
 
     tkinter.Entry(canvas, name = "video id", width = 40).place(x = 100, y = 125)

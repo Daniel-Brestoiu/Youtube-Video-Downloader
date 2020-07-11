@@ -1,6 +1,8 @@
-import tkinter
 import re
 import urllib.request
+
+import tkinter
+from tkinter import filedialog
 
 import ffmpeg_script
 from ffmpeg_script import download_videos
@@ -39,8 +41,20 @@ def init_screen() -> None:
     tkinter.Label(root, text = "Download Location").place(x = 5, y = 50)
 
     tkinter.Entry(root, name = "api_input", width = 39).place(x = 130, y = 10)
-    tkinter.Entry(root, name = "path", width = 39).place(x= 130, y = 50)
-    #Creating necessary entry input fields
+    tkinter.Entry(root, name = "path", width = 30).place(x= 130, y = 50)
+    
+    tkinter.Button(root, name = "path_button", text = "Browse", width = 8, command = select_path).place(x = 415, y = 53)
+
+def select_path() -> None:
+    """Opens popup prompting user to pick a directory. Fills 'path' entry widget with path."""
+
+    root.update()
+    directory = str(tkinter.filedialog.askdirectory(title= "Download Path Selection", parent= root))
+    root.update()
+   
+    entry = find_widgets_by_name("path")
+    entry.delete(0, "end")
+    entry.insert(0, directory)
 
 
 #Different search mode fellas
@@ -171,8 +185,8 @@ def download_button():
         video = [video_id, alt_video_id]
         
         download_videos(video, path= path)
-        
 
+    
     tkinter.Button(root, text = "DOWNLOAD", name = "download", width = 50, height = 2, 
                     command = download).place(x = 25, y = 450)
 

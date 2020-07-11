@@ -1,5 +1,6 @@
 __pycache__/
 downloads.txt
+.DS_Store
 *.pyc
 *.code-workspace
 *.jpg

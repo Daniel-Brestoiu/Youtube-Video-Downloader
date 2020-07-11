@@ -1,6 +1,9 @@
 import tkinter
-import ffmpeg_script
+import re
 import urllib.request
+
+import ffmpeg_script
+from ffmpeg_script import download_videos
 
 import api_logic
 from api_logic import search_video
@@ -163,11 +166,12 @@ def clear_canvas():
 def download_button():
 
     def download() -> None:
-        key = retrieve_key()
         path = retrieve_path()
-        video = retrieve_video()
-
-        print(key, path, video)
+        video_id, alt_video_id = retrieve_video()
+        video = [video_id, alt_video_id]
+        
+        download_videos(video, path= path)
+        
 
     tkinter.Button(root, text = "DOWNLOAD", name = "download", width = 50, height = 2, 
                     command = download).place(x = 25, y = 450)
@@ -182,8 +186,14 @@ def retrieve_path() -> str:
     """Retrieves the input from download path entry field"""
     return str(find_widgets_by_name("path").get())
 
-def retrieve_video():
-    pass       
+def retrieve_video() -> Tuple[str,str]:
+    video_id_input = find_canvas_widget_by_name("video id").get()      
+    video_link_input = find_canvas_widget_by_name("video link").get()
+    
+    regex_pattern = r"\="
+    link, video_link_id = re.split(regex_pattern, video_link_input) 
+
+    return (video_id_input, video_link_id)
 
 def find_widgets_by_name(name: str):
     """Returns the widget that was named in input."""

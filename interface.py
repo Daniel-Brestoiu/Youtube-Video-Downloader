@@ -72,7 +72,7 @@ def mode_buttons() -> None:
         x_pos = 10 + (100*(val))
         tkinter.Radiobutton(root, text = button_name, padx = 1, pady = 5, indicatoron = 0, 
                             variable = search_type, width = 10, value = button_ID, 
-                            command = lambda: show_mode()).place(x = x_pos, y = 100)
+                            command = lambda: show_mode()).place(x = x_pos, y = 97)
 
 def show_mode() -> None:
     """Interprets which radio button is pressed and calls the function to create its search type"""
@@ -129,8 +129,8 @@ def video_search_screen():
 
     tkinter.Label(canvas, name = "video id label", text = "Video ID:", width = 10, anchor = "w", bg = "#A9EDFF",).place(x = 17, y = 124)
     tkinter.Label(canvas, name = "video link label", text = "Video Link:", width = 10, anchor = "w", bg = "#A9EDFF",).place(x= 17, y = 164) 
-    tkinter.Label(canvas, name = "video found label", text = "No Video Searched Yet", bg = "#A9EDFF", width = 38, anchor = "w",).place(x =145, y = 25)
-    tkinter.Label(canvas, name = "youtuber of video label", text = "No Channel Posted This Video", bg = "#A9EDFF", width = 38, anchor = "w").place(x = 145, y = 55)
+    tkinter.Label(canvas, name = "video found label", text = "No Video Searched Yet", bg = "#A9EDFF", anchor = "w",).place(x =145, y = 25)
+    tkinter.Label(canvas, name = "youtuber of video label", text = "No Channel Posted This Video", bg = "#A9EDFF", anchor = "w").place(x = 145, y = 55)
     tkinter.Label(canvas, name = "instructions label", text = "Provide input then click search. Download if correct video is found.", bg = "#A9EDFF", anchor = "w").place(x = 20, y = 220)
 
     tkinter.Entry(canvas, name = "video id", width = 40).place(x = 100, y = 125)
@@ -244,7 +244,7 @@ def test_button():
     def print_widget(name: str):
         print(find_widgets_by_name(name).get())
 
-    tkinter.Button(root, text = "test", command = partial(print_widget, name = "api_input")).place(x= 400, y = 100)
+    #tkinter.Button(root, text = "test", command = partial(print_widget, name = "api_input")).place(x= 400, y = 100)
 
 
 def enumyrate(iterable: Iterable):

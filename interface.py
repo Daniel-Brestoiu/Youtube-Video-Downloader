@@ -1,5 +1,6 @@
 import re
 import urllib.request
+import tempfile
 
 import tkinter
 from tkinter import filedialog
@@ -26,6 +27,18 @@ canvas.place(x = 5, y= 135)
 
 search_type = tkinter.IntVar()
 search_type.set(1)
+
+class Thumbnail_Image():
+    def __init__(self, master = None, url: str = None, temp_file: str = None, scale: int = None):
+        self.master = master
+        self.url = url
+        self.temp_file = temp_file
+        self.scale = scale
+    
+    def download_from_url(self):
+        self.temp_file = tempfile.NamedTemporaryFile()
+        path, http_message = urllib.request.urlretrieve(url = self.url, filename= self.temp_file.name)
+
 
 def init_screen() -> None:
     """Creates the general screen of app"""
@@ -101,10 +114,11 @@ def video_search_screen():
 
         find_canvas_widget_by_name("video found label")["text"] = title
         find_canvas_widget_by_name("youtuber of video label")["text"] = channel_name
+        
+        thumbnail = Thumbnail_Image(master = canvas, url = thumbnail_link)
+        thumbnail.download_from_url()
 
-        download_location = download_to_temp(thumbnail_link, title)
-
-        photo = ImageTk.PhotoImage(Image.open(download_location))
+        photo = ImageTk.PhotoImage(Image.open(thumbnail.temp_file.name))
         thumbnail_placeholder = canvas.create_image((scale/2 + 20,scale/2 + 5), image = photo)
 
         canvas.update()
@@ -228,15 +242,6 @@ def resize_image(image_location: str, height: int, width: int):
     new_image = image.subsample(w_scale,h_scale)
 
     return new_image
-
-def download_to_temp(image_url: str, title: str) -> str:
-    """Given a network object denotated by a URL, downloads to file and returns path to newly downloaded file."""
-    
-    thumbnail_name = "temp thumbnails/" + title + " thumbnail.jpg"
-
-    path, http_message = urllib.request.urlretrieve(url = image_url, filename= thumbnail_name)
-
-    return str(path)
 
 
 #Experiment bois

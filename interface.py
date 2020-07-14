@@ -12,32 +12,49 @@ import api_logic
 from api_logic import search_video
 
 import typing
-from typing import List, Tuple, Iterable
+from typing import List, Tuple, Iterable, IO, Any
 
 from functools import partial
 from PIL import Image, ImageTk
-
-global search_type
-global photo
-photo = Image.open("placeholder_image.png")
 
 root = tkinter.Tk()
 canvas = tkinter.Canvas(root, name = "canvas", width = 485, height = 300, )
 canvas.place(x = 5, y= 135)
 
-search_type = tkinter.IntVar()
-search_type.set(1)
+THUMBNAILS_LIST = []
+
+SEARCH_TYPE = tkinter.IntVar()
+SEARCH_TYPE.set(1)
+
 
 class Thumbnail_Image():
-    def __init__(self, master = None, url: str = None, temp_file: str = None, scale: int = None):
-        self.master = master
+    def __init__(self, url: str = None, temp_file: IO[Any] = None, scale: int = None, width: int = None, height: int = None, image = None):
+        global THUMBNAILS_LIST
+
         self.url = url
         self.temp_file = temp_file
         self.scale = scale
+        self.width = width
+        self.height = height
+        self.image = image
+
+        THUMBNAILS_LIST.append(self)
+
     
     def download_from_url(self):
         self.temp_file = tempfile.NamedTemporaryFile()
         path, http_message = urllib.request.urlretrieve(url = self.url, filename= self.temp_file.name)
+    
+    def place_thumbnail_from_temp(self):
+        self.image = ImageTk.PhotoImage(Image.open(self.temp_file.name))
+        thumbnail_placeholder = canvas.create_image((self.scale/2 + 20, self.scale/2 + 5), image = self.image)
+    
+    def place_thumbnail_from_image(self):
+        thumbnail_placeholder = canvas.create_image((self.scale/2 + 20, self.scale/2 + 5), image = self.image)
+
+    def destroy(self):
+        if self.temp_file is not None:
+            self.temp_file.close()
 
 
 def init_screen() -> None:
@@ -73,7 +90,7 @@ def select_path() -> None:
 #Different search mode fellas
 def mode_buttons() -> None:
     """Creates the Radiobuttons which control search types"""
-    global search_type
+    global SEARCH_TYPE
 
     modes = [
         ("Video", 1),
@@ -84,13 +101,13 @@ def mode_buttons() -> None:
     for val, (button_name, button_ID)  in enumerate(modes):
         x_pos = 10 + (100*(val))
         tkinter.Radiobutton(root, text = button_name, padx = 1, pady = 5, indicatoron = 0, 
-                            variable = search_type, width = 10, value = button_ID, 
+                            variable = SEARCH_TYPE, width = 10, value = button_ID, 
                             command = lambda: show_mode()).place(x = x_pos, y = 97)
 
 def show_mode() -> None:
     """Interprets which radio button is pressed and calls the function to create its search type"""
 
-    selected_mode = search_type.get()
+    selected_mode = SEARCH_TYPE.get()
     # Video = 1, Playlist = 2, Search = 3
 
     if selected_mode == 1:
@@ -102,10 +119,8 @@ def show_mode() -> None:
 
 def video_search_screen():
     """Changes canvas to video search mode"""
-    global photo
 
     def search() -> None:
-        global photo
 
         video_id = get_video_id()
         video_link = get_video_link()
@@ -115,11 +130,11 @@ def video_search_screen():
         find_canvas_widget_by_name("video found label")["text"] = title
         find_canvas_widget_by_name("youtuber of video label")["text"] = channel_name
         
-        thumbnail = Thumbnail_Image(master = canvas, url = thumbnail_link)
-        thumbnail.download_from_url()
+        clear_thumbnails()
 
-        photo = ImageTk.PhotoImage(Image.open(thumbnail.temp_file.name))
-        thumbnail_placeholder = canvas.create_image((scale/2 + 20,scale/2 + 5), image = photo)
+        thumbnail = Thumbnail_Image(url = thumbnail_link, width = thumbnail_width, height = thumbnail_height, scale = 100)
+        thumbnail.download_from_url()
+        thumbnail.place_thumbnail_from_temp()
 
         canvas.update()
         
@@ -136,9 +151,9 @@ def video_search_screen():
 
     canvas["background"] = "#A9EDFF"
 
-    scale = 100
-    photo = resize_image("placeholder_image.png", scale, scale)
-    thumbnail_placeholder = canvas.create_image((scale/2 + 5,scale/2 + 5), image = photo)
+    photo = resize_image("placeholder_image.png", 100, 100)
+    placeholder_thumbnail = Thumbnail_Image(scale = 100, image = photo)
+    placeholder_thumbnail.place_thumbnail_from_image()
 
 
     tkinter.Label(canvas, name = "video id label", text = "Video ID:", width = 10, anchor = "w", bg = "#A9EDFF",).place(x = 17, y = 124)
@@ -187,7 +202,13 @@ def clear_canvas():
     for child in canvas.winfo_children():
         child.destroy()
 
+def clear_thumbnails():
+    global THUMBNAILS_LIST
 
+    for thumbnail in THUMBNAILS_LIST:
+        thumbnail.destroy()
+    
+    THUMBNAILS_LIST = []
 
 
 #Download button and his homie functions

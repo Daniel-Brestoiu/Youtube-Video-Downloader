@@ -27,6 +27,10 @@ SEARCH_TYPE = tkinter.IntVar()
 SEARCH_TYPE.set(1)
 
 
+EYE_OPEN_IMAGE = tkinter.PhotoImage(file = "password eye open.png") # Mode 0
+EYE_CLOSED_IMAGE = tkinter.PhotoImage(file = "password eye closed.png") # Mode 1 
+EYE_MODE = 0
+
 class Thumbnail_Image():
     def __init__(self, url: str = None, temp_file: IO[Any] = None, scale: int = None, width: int = None, height: int = None, image = None):
         global THUMBNAILS_LIST
@@ -41,18 +45,22 @@ class Thumbnail_Image():
         THUMBNAILS_LIST.append(self)
 
     
-    def download_from_url(self):
+    def download_from_url(self) -> None:
+        """Downloads contents from self.url and stores it in a temp file referenced as self.temp_file."""
         self.temp_file = tempfile.NamedTemporaryFile()
-        path, http_message = urllib.request.urlretrieve(url = self.url, filename= self.temp_file.name)
+        urllib.request.urlretrieve(url = self.url, filename= self.temp_file.name)
     
-    def place_thumbnail_from_temp(self):
+    def place_thumbnail_from_temp(self) -> None:
+        """Takes image stored in self.temp_file, and stores it in self.image -> places self.image on canvas using tkinter canvas.create_image()"""
         self.image = ImageTk.PhotoImage(Image.open(self.temp_file.name))
         thumbnail_placeholder = canvas.create_image((self.scale/2 + 20, self.scale/2 + 5), image = self.image)
     
-    def place_thumbnail_from_image(self):
+    def place_thumbnail_from_image(self) -> None:
+        """Places self.image on canvas using tkinter canvas.create_image()."""
         thumbnail_placeholder = canvas.create_image((self.scale/2 + 20, self.scale/2 + 5), image = self.image)
 
-    def destroy(self):
+    def destroy(self) -> None:
+        """If there is a temp file referenced by self.temp_file, properly closes the temp file."""
         if self.temp_file is not None:
             self.temp_file.close()
 
@@ -74,6 +82,7 @@ def init_screen() -> None:
     tkinter.Entry(root, name = "path", width = 30).place(x= 130, y = 50)
     
     tkinter.Button(root, name = "path_button", text = "Browse", width = 8, command = select_path).place(x = 415, y = 53)
+    tkinter.Button(root, name = "secret_button", image = EYE_OPEN_IMAGE, command = swap_entry_mode).place(x = 466, y = 12)
 
 def select_path() -> None:
     """Opens popup prompting user to pick a directory. Fills 'path' entry widget with path."""
@@ -140,9 +149,11 @@ def video_search_screen():
         
 
     def get_video_id() -> str:
+        """Returns the text of video id entry field"""
         return find_canvas_widget_by_name("video id").get()
 
     def get_video_link() -> str:
+        """Returns the text of video link entry field"""
         return find_canvas_widget_by_name("video link").get()
 
 
@@ -173,36 +184,32 @@ def video_search_screen():
 
 
 
-def playlist_search_screen():
+def playlist_search_screen() -> None:
     """Changes canvas to playlist search mode"""
     
     canvas.delete("all")
     clear_canvas()
 
-    canvas["background"] = "#09ff00"
-    
-    
-    
+    canvas["background"] = "#09ff00"    
     canvas.update()
     
 
-def youtube_search_screen():
+def youtube_search_screen() -> None:
     """Changes canvas to general youtube search mode"""
     
     canvas.delete("all")
     clear_canvas()
     
     canvas["background"] = "#ff0000"
-    
-    
-    
     canvas.update()
 
-def clear_canvas():
+def clear_canvas() -> None:
+    """Loops through and deletes objects stored as children of canvas. """
     for child in canvas.winfo_children():
         child.destroy()
 
-def clear_thumbnails():
+def clear_thumbnails() -> None:
+    """Properly closes temp files of all Thumbnail_Image objects. Unlinks reference to all Thumbnail_Image objects."""
     global THUMBNAILS_LIST
 
     for thumbnail in THUMBNAILS_LIST:
@@ -212,7 +219,8 @@ def clear_thumbnails():
 
 
 #Download button and his homie functions
-def download_button():
+def download_button() -> None:
+    """Places download button on app. Also contains download function."""
 
     def download() -> None:
         path = retrieve_path()
@@ -228,7 +236,6 @@ def download_button():
 
 def retrieve_key() -> str:
     """Retrieves the input from API Input entry field"""
-    
     return str(find_widgets_by_name("api_input").get())
 
 def retrieve_path() -> str:
@@ -236,6 +243,7 @@ def retrieve_path() -> str:
     return str(find_widgets_by_name("path").get())
 
 def retrieve_video() -> Tuple[str,str]:
+    """Calls regex to find video id from an inputted video link. Returns a tuple of video ids from input and parsed from link, respectively. """
     video_id_input = find_canvas_widget_by_name("video id").get()      
     video_link_input = find_canvas_widget_by_name("video link").get()
     
@@ -255,6 +263,7 @@ def find_canvas_widget_by_name(name:str):
 
 #Helpful photo friends
 def resize_image(image_location: str, height: int, width: int):
+    """Given file location, and height/width inputs, shrinks image by a factor of the input. Ex: Current = 120 and 90, input = 10,10 -> result = 12, 9. Returns resized image. """
     image = tkinter.PhotoImage(file = image_location)
 
     w_scale = int(int(image.width())/width)
@@ -264,6 +273,37 @@ def resize_image(image_location: str, height: int, width: int):
 
     return new_image
 
+def swap_entry_mode() -> None:
+    """Swaps image on secret_button from open to closed eye. 
+    Changes display of api_input from * to regular. 
+    Returns None."""
+    global EYE_OPEN_IMAGE
+    global EYE_CLOSED_IMAGE
+    global EYE_MODE
+
+    button = find_widgets_by_name("secret_button")
+    api_entry =  find_widgets_by_name("api_input")
+
+    if EYE_MODE == 0:
+        #Close eye
+        button["image"] = EYE_CLOSED_IMAGE
+        EYE_MODE = 1 
+        api_entry.config(show = "*")
+    elif EYE_MODE == 1:
+        #Open eye
+        button["image"] = EYE_OPEN_IMAGE
+        EYE_MODE = 0
+        api_entry.config(show ="")
+    
+    #Show does not change the contents of the entry input.
+
+def globalize_images() -> None:
+    """Resizes permanent images. Returns None."""
+    global EYE_OPEN_IMAGE
+    global EYE_CLOSED_IMAGE
+
+    EYE_OPEN_IMAGE = resize_image("password eye open.png", 20, 20)
+    EYE_CLOSED_IMAGE = resize_image("password eye closed.png", 20, 20 )
 
 #Experiment bois
 def test_button():
@@ -282,6 +322,7 @@ def enumyrate(iterable: Iterable):
 
 #The main man :DD
 def main():
+    globalize_images()
     init_screen()
 
     test_button()

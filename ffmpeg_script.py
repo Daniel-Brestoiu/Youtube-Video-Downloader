@@ -5,10 +5,8 @@ from typing import List
 
 """
 Control of youtube-dl
-    - youtube-dl -o '/Users/daniel/Desktop/Music/%(title)s.%(ext)s' -f mp4/best 'https://www.youtube.com/watch?v=Djsi8qcVelo'
     - (youtube-dl) (-o for output)(output location) (-f for format) (format type)/(quality type) (url)
 """
-
 
 def download_videos(unique_codes_list: List[str], path: str) -> None:
     """Given a list of unique video codes, downloads them all using the download_video(video_code, format = "mp4") function."""
@@ -24,7 +22,6 @@ def download_video(video_code: str, path: str = f"{Path.home()}", format: str = 
     """
 
     subprocess.run(["youtube-dl", "-o", f'{path}/%(title)s.%(ext)s', "-f", f"{format}/best", f"https://www.youtube.com/watch?v={video_code}"])
-
 
 if __name__ == "__main__":
     download_video("")

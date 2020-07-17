@@ -22,8 +22,8 @@ THUMBNAILS_LIST = []
 SEARCH_TYPE = tkinter.IntVar()
 SEARCH_TYPE.set(1)
 
-EYE_OPEN_IMAGE = tkinter.PhotoImage(file = "password eye open.png") # Mode 0
-EYE_CLOSED_IMAGE = tkinter.PhotoImage(file = "password eye closed.png") # Mode 1 
+EYE_CLOSED_IMAGE = tkinter.PhotoImage(file = "password eye closed.png") # Mode 0
+EYE_OPEN_IMAGE = tkinter.PhotoImage(file = "password eye open.png") # Mode 1 
 EYE_MODE = 0
 
 class Thumbnail_Image():
@@ -77,7 +77,7 @@ def init_screen() -> None:
     tkinter.Entry(root, name = "path", width = 30).place(x= 130, y = 50)
     
     tkinter.Button(root, name = "path_button", text = "Browse", width = 8, command = select_path).place(x = 415, y = 53)
-    tkinter.Button(root, name = "secret_button", image = EYE_OPEN_IMAGE, command = swap_entry_mode).place(x = 466, y = 12)
+    tkinter.Button(root, name = "secret_button", image = EYE_CLOSED_IMAGE, command = swap_entry_mode).place(x = 466, y = 12)
 
 def select_path() -> None:
     """Opens popup prompting user to pick a directory. Fills 'path' entry widget with path."""
@@ -279,12 +279,12 @@ def swap_entry_mode() -> None:
 
     if EYE_MODE == 0:
         #Close eye
-        button["image"] = EYE_CLOSED_IMAGE
+        button["image"] = EYE_OPEN_IMAGE
         EYE_MODE = 1 
         api_entry.config(show = "*")
     elif EYE_MODE == 1:
         #Open eye
-        button["image"] = EYE_OPEN_IMAGE
+        button["image"] = EYE_CLOSED_IMAGE
         EYE_MODE = 0
         api_entry.config(show ="")
     

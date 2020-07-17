@@ -1,26 +1,17 @@
 import re
 import googleapiclient
+from pathlib import Path
 from googleapiclient.discovery import build
 from ffmpeg_script import download_videos
 from typing import Tuple, List
 
-"""
-Channel UCrS7pF40yRheVTFXzuawvwA
-Playlist PL4y8ZuWSzyRRTt3i-XujOg7NYX72XV8MG
-"""
-
-
-API_KEY = 'AIzaSyBs1qMkQYzS4Vr2oCBYHOfx_TTcM6xYGUk'
-YOUTUBE = build("youtube", "v3", developerKey=API_KEY)
-
-
-def query(search_item: str) -> List[Tuple[str, str]]:
+def query(search_item: str, API_KEY:str) -> List[Tuple[str, str]]:
     """ Search youtube for input parameter.
         Returns list of 5 results and their video IDs
     """
+    YOUTUBE = build("youtube", "v3", developerKey=API_KEY)
 
     assert type(search_item) == str, "Improper search code"
-
     request: googleapiclient.http.HttpRequest = YOUTUBE.search().list(q=search_item,
                                                                       part="snippet",
                                                                       type="video")
@@ -33,10 +24,11 @@ def query(search_item: str) -> List[Tuple[str, str]]:
     return results_list
 
 
-def find_videos_in_playlist(playlistID: str) -> List[str]:
+def find_videos_in_playlist(playlistID: str, API_KEY:str) -> List[str]:
     """Finds specific, existing playlist where I put youtube video songs I liked.
     Returns video Id for each of the videos in a list."""
-
+    
+    YOUTUBE = build("youtube", "v3", developerKey=API_KEY)
     playlist = YOUTUBE.playlistItems().list(part="contentDetails",
                                             playlistId=playlistID).execute()
 
@@ -62,11 +54,9 @@ def check_file_codes(file_name: str) -> List[str]:
         handle = open(file_name, "r")
 
     file_contents = handle.readlines()
-
     downloaded_codes: List[str] = []
     for line in file_contents:
         downloaded_codes.append(line.rstrip())
-
     handle.close()
 
     return downloaded_codes
@@ -76,7 +66,6 @@ def cull_codes(video_codes: List[str], downloaded_codes: List[str]) -> List[str]
     """Given two lists of strings, where the second list is a subset of the first, returns the first list without the subset."""
 
     unique_codes = []
-
     for x in video_codes:
         if x not in downloaded_codes:
             unique_codes.append(x)
@@ -95,17 +84,18 @@ def write_to_file(file_name: str, codes_list: List[str]) -> None:
     """Given file name and a list, appends to the file all items in the list as a string."""
 
     file_handle = open(file_name, "a")
-
     for x in codes_list:
         file_handle.write("\n" + x)
 
     file_handle.close()
 
-def search_video(video_id: str, video_link: str) -> List[str]:
+def search_video(video_id: str, video_link: str, API_KEY:str) -> List[str]:
     """Given a youtube video identifier, finds the video in question.
     Downloads the video thumbnail as image
     Returns the Video Name, Channel name, thumbnail image name/location?"""
     
+    YOUTUBE = build("youtube", "v3", developerKey=API_KEY)
+
     def get_video_info(video_id: str) -> List[str]:
         request = YOUTUBE.videos().list(part = "snippet", id = video_id)
         response = request.execute()
@@ -119,13 +109,14 @@ def search_video(video_id: str, video_link: str) -> List[str]:
 
         return [title,channel_name, thumbnail_link, thumbnail_width, thumbnail_height]
 
-
     if len(video_id) != 11:
         #print("Invalid video ID input. Searching using link information.")
 
-        regex_pattern = r"\="
-        direction, link_id = re.split(regex_pattern, string = video_link)
-        
+        regex_pattern = r"\?v=(.{11})"
+        capture_groups = re.search(regex_pattern, string = video_link)
+        link_id = capture_groups[0][3:]
+        print(link_id)
+
         info = get_video_info(link_id)
 
     else:
@@ -135,23 +126,11 @@ def search_video(video_id: str, video_link: str) -> List[str]:
         response = request.execute()
         
         info = get_video_info(video_id)
-
     #Thumbnail at https://img.youtube.com/vi/<insert-youtube-video-id-here>/default.jpg
 
     return info
-    
 
-    
-    
-
-
-
-
-def main() -> None:
-    codes = find_unique_codes(find_videos_in_playlist("PL4y8ZuWSzyRRTt3i-XujOg7NYX72XV8MG"))
+def download_playlist(playlistID: str, API_KEY:str) -> None:
+    codes = find_unique_codes(find_videos_in_playlist((playlistID), API_KEY = API_KEY))
     write_to_file("downloads.txt", codes)
     download_videos(codes)
-
-
-if __name__ == "__main__":
-    main()

@@ -1,19 +1,15 @@
 import re
 import urllib.request
 import tempfile
-
 import tkinter
-from tkinter import filedialog
-
 import ffmpeg_script
-from ffmpeg_script import download_videos
-
 import api_logic
-from api_logic import search_video
-
 import typing
-from typing import List, Tuple, Iterable, IO, Any
 
+from tkinter import filedialog
+from ffmpeg_script import download_videos
+from api_logic import search_video
+from typing import List, Tuple, Iterable, IO, Any
 from functools import partial
 from PIL import Image, ImageTk
 
@@ -25,7 +21,6 @@ THUMBNAILS_LIST = []
 
 SEARCH_TYPE = tkinter.IntVar()
 SEARCH_TYPE.set(1)
-
 
 EYE_OPEN_IMAGE = tkinter.PhotoImage(file = "password eye open.png") # Mode 0
 EYE_CLOSED_IMAGE = tkinter.PhotoImage(file = "password eye closed.png") # Mode 1 
@@ -133,14 +128,14 @@ def video_search_screen():
 
         video_id = get_video_id()
         video_link = get_video_link()
+        api_key_input = get_api_key()
 
-        title, channel_name, thumbnail_link, thumbnail_width, thumbnail_height = search_video(video_id = video_id, video_link = video_link)
+        title, channel_name, thumbnail_link, thumbnail_width, thumbnail_height = search_video(video_id = video_id, video_link = video_link, API_KEY= api_key_input)
 
         find_canvas_widget_by_name("video found label")["text"] = title
         find_canvas_widget_by_name("youtuber of video label")["text"] = channel_name
         
         clear_thumbnails()
-
         thumbnail = Thumbnail_Image(url = thumbnail_link, width = thumbnail_width, height = thumbnail_height, scale = 100)
         thumbnail.download_from_url()
         thumbnail.place_thumbnail_from_temp()
@@ -156,8 +151,10 @@ def video_search_screen():
         """Returns the text of video link entry field"""
         return find_canvas_widget_by_name("video link").get()
 
+    def get_api_key() -> str:
+        """Returns the text of the api_input entry field"""
+        return find_widgets_by_name("api_input").get()
 
-    canvas.delete("all")
     clear_canvas()
 
     canvas["background"] = "#A9EDFF"
@@ -182,12 +179,9 @@ def video_search_screen():
     canvas.update()
 
 
-
-
 def playlist_search_screen() -> None:
     """Changes canvas to playlist search mode"""
     
-    canvas.delete("all")
     clear_canvas()
 
     canvas["background"] = "#09ff00"    
@@ -197,7 +191,6 @@ def playlist_search_screen() -> None:
 def youtube_search_screen() -> None:
     """Changes canvas to general youtube search mode"""
     
-    canvas.delete("all")
     clear_canvas()
     
     canvas["background"] = "#ff0000"
@@ -205,6 +198,7 @@ def youtube_search_screen() -> None:
 
 def clear_canvas() -> None:
     """Loops through and deletes objects stored as children of canvas. """
+    canvas.delete("all")
     for child in canvas.winfo_children():
         child.destroy()
 
@@ -228,7 +222,6 @@ def download_button() -> None:
         video = [video_id, alt_video_id]
         
         download_videos(video, path= path)
-
     
     tkinter.Button(root, text = "DOWNLOAD", name = "download", width = 50, height = 2, 
                     command = download).place(x = 25, y = 450)
@@ -247,8 +240,9 @@ def retrieve_video() -> Tuple[str,str]:
     video_id_input = find_canvas_widget_by_name("video id").get()      
     video_link_input = find_canvas_widget_by_name("video link").get()
     
-    regex_pattern = r"\="
-    link, video_link_id = re.split(regex_pattern, video_link_input) 
+    regex_pattern = r"\?v=(.{11})"
+    capture_groups = re.search(regex_pattern, video_link_input) 
+    video_link_id = capture_groups[0][3:]
 
     return (video_id_input, video_link_id)
 
@@ -258,7 +252,6 @@ def find_widgets_by_name(name: str):
 
 def find_canvas_widget_by_name(name:str):
     return root.children["canvas"].children[name]
-
 
 
 #Helpful photo friends

@@ -184,7 +184,7 @@ def playlist_search_screen() -> None:
     
     clear_canvas()
 
-    canvas["background"] = "#09ff00"    
+    canvas["background"] = "#b2a9ff"    
     canvas.update()
     
 
@@ -193,7 +193,7 @@ def youtube_search_screen() -> None:
     
     clear_canvas()
     
-    canvas["background"] = "#ff0000"
+    canvas["background"] = "#a9ffbc"
     canvas.update()
 
 def clear_canvas() -> None:

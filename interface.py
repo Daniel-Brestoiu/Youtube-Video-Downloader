@@ -6,7 +6,7 @@ import ffmpeg_script
 import api_logic
 import typing
 
-from tkinter import filedialog
+from tkinter import filedialog, messagebox, ttk
 from ffmpeg_script import download_videos
 from api_logic import search_video
 from typing import List, Tuple, Iterable, IO, Any
@@ -59,6 +59,70 @@ class Thumbnail_Image():
         if self.temp_file is not None:
             self.temp_file.close()
 
+class Error():
+    def __init__(self, master = root, title:str = "Error", message:str = "Error", name:str = None, frame = None, x_pos = None, y_pos = None):
+        self.master = master
+        self.title = title
+        self.message = message
+        self.name = name
+        self.x_pos = x_pos
+        self.y_pos = y_pos
+    
+    def popup(self):
+        global SEARCH_TYPE
+
+        def place_frame_math(self):
+            """Conducts the math necessary to place popup on canvas (in a pretty way :D)"""
+            self.frame.update()
+            width = self.frame.winfo_width()
+            height = self.frame.winfo_height()
+            
+            canvas_width = canvas.winfo_width()
+            canvas_height = canvas.winfo_height()
+
+            x = (canvas_height - height)//2  # (5, 135) is the (x, y) location of the canvas
+            y = (canvas_width - width)//2 - 135  
+
+            self.x_pos = x
+            self.y_pos = y
+            
+        def move_self(self):
+
+            self.frame.place(x = self.x_pos, y = self.y_pos)
+            canvas.update()
+
+
+        mode = SEARCH_TYPE.get()
+        if mode == 1:
+            colour = "#ffc3a9"
+        elif mode == 2:
+            colour = "#ffd8a9"
+        else:
+            colour = "#ffada9"
+
+        
+        self.frame = tkinter.Frame(master = canvas, name = self.name, height = 100, width = 150, bg = colour, relief = "solid", borderwidth = 2)
+
+        exit_button = tkinter.Button(master= self.frame, text = "X",  command = self.kill_self, highlightbackground = colour,).grid(row = 1, column = 3)       #.place(x = 130, y = 2)
+        error_title = tkinter.Label(master = self.frame, text = "ERROR!", bg = colour).grid(row = 1, column = 1)       #.place(x = 5, y = 5)
+        filler = tkinter.Label(master = self.frame, text = "", bg = colour).grid(row= 2, column = 1)
+        error_message = tkinter.Label(master = self.frame, text = self.message, bg = colour, ).grid(row = 3, column = 1)     #.place(x= 25, y = 25)
+
+        place_frame_math(self)
+        move_self(self)
+
+    def kill_self(self):
+        self.frame.pack_forget()
+        self.frame.destroy()
+
+
+
+    # Not satisfied with this. Probably need to make a custom message popup to make it nice looking.
+    #Triangle + Rectangle with text. 
+
+    #Mode 1 popup colour #ffc3a9
+    #Mode 2 popup colour #ffd8a9
+    #Mode 3 popup colour #ffada9
 
 def init_screen() -> None:
     """Creates the general screen of app"""
@@ -303,8 +367,9 @@ def test_button():
     def print_widget(name: str):
         print(find_widgets_by_name(name).get())
 
-    #tkinter.Button(root, text = "test", command = partial(print_widget, name = "api_input")).place(x= 400, y = 100)
-
+    error = Error(message= "This is an error message! Oh no!", name = "popup_message")
+    # tkinter.Button(root, text = "test", command = partial(print_widget, name = "api_input")).place(x= 400, y = 100)
+    tkinter.Button(root, text = "test", command = error.popup).place(x= 400, y = 100)
 
 def enumyrate(iterable: Iterable):
     counter = 0

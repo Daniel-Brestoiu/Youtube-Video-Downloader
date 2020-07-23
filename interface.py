@@ -6,6 +6,7 @@ import ffmpeg_script
 import api_logic
 import typing
 
+from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 from ffmpeg_script import download_videos
 from api_logic import search_video
@@ -104,7 +105,7 @@ class Error():
         self.frame = tkinter.Frame(master = canvas, name = self.name, height = 100, width = 150, bg = colour, relief = "solid", borderwidth = 2)
 
         exit_button = tkinter.Button(master= self.frame, text = "X",  command = self.kill_self, highlightbackground = colour,).grid(row = 1, column = 3)       #.place(x = 130, y = 2)
-        error_title = tkinter.Label(master = self.frame, text = "ERROR!", bg = colour).grid(row = 1, column = 1)       #.place(x = 5, y = 5)
+        error_title = tkinter.Label(master = self.frame, text = self.title, bg = colour).grid(row = 1, column = 1)       #.place(x = 5, y = 5)
         filler = tkinter.Label(master = self.frame, text = "", bg = colour).grid(row= 2, column = 1)
         error_message = tkinter.Label(master = self.frame, text = self.message, bg = colour, ).grid(row = 3, column = 1)     #.place(x= 25, y = 25)
 
@@ -114,11 +115,6 @@ class Error():
     def kill_self(self):
         self.frame.pack_forget()
         self.frame.destroy()
-
-
-
-    # Not satisfied with this. Probably need to make a custom message popup to make it nice looking.
-    #Triangle + Rectangle with text. 
 
     #Mode 1 popup colour #ffc3a9
     #Mode 2 popup colour #ffd8a9
@@ -194,8 +190,20 @@ def video_search_screen():
         video_link = get_video_link()
         api_key_input = get_api_key()
 
-        title, channel_name, thumbnail_link, thumbnail_width, thumbnail_height = search_video(video_id = video_id, video_link = video_link, API_KEY= api_key_input)
+        return_value = search_video(video_id = video_id, video_link = video_link, API_KEY= api_key_input)
+        
+        if return_value == "Invalid API Key":
+            error = Error(message = "Please input a valid Youtube V3 Data Api Key.")
+            error.popup()
+            return
 
+        elif return_value == "Invalid Video Info":
+            error = Error(message = "Please input valid video information.")
+            error.popup()
+            return
+        else:
+            title, channel_name, thumbnail_link, thumbnail_width, thumbnail_height = return_value
+        
         find_canvas_widget_by_name("video found label")["text"] = title
         find_canvas_widget_by_name("youtuber of video label")["text"] = channel_name
         
@@ -282,10 +290,19 @@ def download_button() -> None:
 
     def download() -> None:
         path = retrieve_path()
-        video_id, alt_video_id = retrieve_video()
-        video = [video_id, alt_video_id]
+        video = retrieve_video()
         
+        if video == "Invalid Video Info":
+            error = Error(message = "Please input valid video information.")
+            error.popup()
+            return
+        elif path == "":
+            error = Error(title = "Warning!", message = f"Default download location selected: {Path.home()}")            
+            error.popup()
+            root.update()
+
         download_videos(video, path= path)
+
     
     tkinter.Button(root, text = "DOWNLOAD", name = "download", width = 50, height = 2, 
                     command = download).place(x = 25, y = 450)
@@ -301,12 +318,16 @@ def retrieve_path() -> str:
 
 def retrieve_video() -> Tuple[str,str]:
     """Calls regex to find video id from an inputted video link. Returns a tuple of video ids from input and parsed from link, respectively. """
-    video_id_input = find_canvas_widget_by_name("video id").get()      
-    video_link_input = find_canvas_widget_by_name("video link").get()
     
-    regex_pattern = r"\?v=(.{11})"
-    capture_groups = re.search(regex_pattern, video_link_input) 
-    video_link_id = capture_groups[0][3:]
+    try:
+        video_id_input = find_canvas_widget_by_name("video id").get()      
+        video_link_input = find_canvas_widget_by_name("video link").get()
+        
+        regex_pattern = r"\?v=(.{11})"
+        capture_groups = re.search(regex_pattern, video_link_input) 
+        video_link_id = capture_groups[0][3:]
+    except:
+        return "Invalid Video Info"
 
     return (video_id_input, video_link_id)
 

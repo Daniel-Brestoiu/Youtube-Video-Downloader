@@ -94,7 +94,11 @@ def search_video(video_id: str, video_link: str, API_KEY:str) -> List[str]:
     Downloads the video thumbnail as image
     Returns the Video Name, Channel name, thumbnail image name/location?"""
     
-    YOUTUBE = build("youtube", "v3", developerKey=API_KEY)
+    try:
+        YOUTUBE = build("youtube", "v3", developerKey=API_KEY)
+    except Exception:
+        return "Invalid API Key"
+
 
     def get_video_info(video_id: str) -> List[str]:
         request = YOUTUBE.videos().list(part = "snippet", id = video_id)
@@ -112,20 +116,34 @@ def search_video(video_id: str, video_link: str, API_KEY:str) -> List[str]:
     if len(video_id) != 11:
         #print("Invalid video ID input. Searching using link information.")
 
-        regex_pattern = r"\?v=(.{11})"
-        capture_groups = re.search(regex_pattern, string = video_link)
-        link_id = capture_groups[0][3:]
-        print(link_id)
-
-        info = get_video_info(link_id)
+        try:
+            regex_pattern = r"\?v=(.{11})"
+            capture_groups = re.search(regex_pattern, string = video_link)
+            link_id = capture_groups[0][3:]
+            info = get_video_info(link_id)
+        except:
+            return "Invalid Video Info"
 
     else:
         #print("Valid video ID input, searching through video ID.")
-    
-        request = YOUTUBE.videos().list(part = "snippet", id = video_id)
-        response = request.execute()
         
-        info = get_video_info(video_id)
+        try:
+            request = YOUTUBE.videos().list(part = "snippet", id = video_id)
+            response = request.execute()
+            
+            info = get_video_info(video_id)
+            return info
+
+        except:
+            try:
+                regex_pattern = r"\?v=(.{11})"
+                capture_groups = re.search(regex_pattern, string = video_link)
+                link_id = capture_groups[0][3:]
+                info = get_video_info(link_id)
+            except:
+                return "Invalid Video Info"
+
+
     #Thumbnail at https://img.youtube.com/vi/<insert-youtube-video-id-here>/default.jpg
 
     return info

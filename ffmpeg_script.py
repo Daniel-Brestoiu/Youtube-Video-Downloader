@@ -10,6 +10,9 @@ Control of youtube-dl
 
 def download_videos(unique_codes_list: List[str], path: str) -> None:
     """Given a list of unique video codes, downloads them all using the download_video(video_code, format = "mp4") function."""
+    if path == "":
+        path = Path.home()
+
     for x in unique_codes_list:
         assert type(x) == str, "Improper code."
         download_video(video_code=x, path = path)

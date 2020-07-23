@@ -7,7 +7,7 @@ import api_logic
 import typing
 
 from pathlib import Path
-from tkinter import filedialog, messagebox, ttk
+from tkinter import filedialog, messagebox, ttk, font
 from ffmpeg_script import download_videos
 from api_logic import search_video
 from typing import List, Tuple, Iterable, IO, Any
@@ -68,25 +68,31 @@ class Error():
         self.name = name
         self.x_pos = x_pos
         self.y_pos = y_pos
-    
+
     def popup(self):
         global SEARCH_TYPE
 
         def place_frame_math(self):
             """Conducts the math necessary to place popup on canvas (in a pretty way :D)"""
-            self.frame.update()
-            width = self.frame.winfo_width()
-            height = self.frame.winfo_height()
+
+            my_font = font.Font(family = "Helevetica", size = 13)   #Default is most likely the same font/size as this 
+            text_length = my_font.measure(self.message)             # Gets text message width
+
+            message = tkinter.Text(font = my_font)
+            message.insert("end", self.message,)                    # Gets text message height
+
+            width = text_length                      
+            height = 3 * message.cget("height")             # 3 lines of text, presumably same message height
             
             canvas_width = canvas.winfo_width()
             canvas_height = canvas.winfo_height()
 
-            x = (canvas_height - height)//2  # (5, 135) is the (x, y) location of the canvas
-            y = (canvas_width - width)//2 - 135  
+            x = (canvas_width - width)//2 - 15             # Necessary shift of 15 to account for X button.
+            y = (canvas_height - height)//2 
 
             self.x_pos = x
             self.y_pos = y
-            
+
         def move_self(self):
 
             self.frame.place(x = self.x_pos, y = self.y_pos)
@@ -102,7 +108,7 @@ class Error():
             colour = "#ffada9"
 
         
-        self.frame = tkinter.Frame(master = canvas, name = self.name, height = 100, width = 150, bg = colour, relief = "solid", borderwidth = 2)
+        self.frame = tkinter.Frame(master = canvas, name = self.name, bg = colour, relief = "solid", borderwidth = 2)
 
         exit_button = tkinter.Button(master= self.frame, text = "X",  command = self.kill_self, highlightbackground = colour,).grid(row = 1, column = 3)       #.place(x = 130, y = 2)
         error_title = tkinter.Label(master = self.frame, text = self.title, bg = colour).grid(row = 1, column = 1)       #.place(x = 5, y = 5)
@@ -388,7 +394,7 @@ def test_button():
     def print_widget(name: str):
         print(find_widgets_by_name(name).get())
 
-    error = Error(message= "This is an error message! Oh no!", name = "popup_message")
+    error = Error(message= "This is a sample of what an error message might be" , name = "popup_message")
     # tkinter.Button(root, text = "test", command = partial(print_widget, name = "api_input")).place(x= 400, y = 100)
     tkinter.Button(root, text = "test", command = error.popup).place(x= 400, y = 100)
 

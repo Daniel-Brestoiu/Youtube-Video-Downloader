@@ -98,6 +98,13 @@ class Error():
             self.frame.place(x = self.x_pos, y = self.y_pos)
             canvas.update()
 
+        def kill_by_name(self):
+            try:
+                fake = find_canvas_widget_by_name(self.name)
+                fake.kill_self(fake)
+            except:
+                #Means this is the first error popup. Others do have not been made yet.
+                pass
 
         mode = SEARCH_TYPE.get()
         if mode == 1:
@@ -108,7 +115,9 @@ class Error():
             colour = "#ffada9"
 
         
-        self.frame = tkinter.Frame(master = canvas, name = self.name, bg = colour, relief = "solid", borderwidth = 2)
+        kill_by_name(self.name) #Removes others with same name. All popups have same name (so far)
+
+        self.frame = tkinter.Frame(master = canvas, name = self.name, bg = colour, relief = "solid", borderwidth = 2,)
 
         exit_button = tkinter.Button(master= self.frame, text = "X",  command = self.kill_self, highlightbackground = colour,).grid(row = 1, column = 3)       #.place(x = 130, y = 2)
         error_title = tkinter.Label(master = self.frame, text = self.title, bg = colour).grid(row = 1, column = 1)       #.place(x = 5, y = 5)
@@ -199,12 +208,12 @@ def video_search_screen():
         return_value = search_video(video_id = video_id, video_link = video_link, API_KEY= api_key_input)
         
         if return_value == "Invalid API Key":
-            error = Error(message = "Please input a valid Youtube V3 Data Api Key.")
+            error = Error(message = "Please input a valid Youtube V3 Data Api Key.", name = "popup")
             error.popup()
             return
 
         elif return_value == "Invalid Video Info":
-            error = Error(message = "Please input valid video information.")
+            error = Error(message = "Please input valid video information.", name = "popup")
             error.popup()
             return
         else:
@@ -299,11 +308,11 @@ def download_button() -> None:
         video = retrieve_video()
         
         if video == "Invalid Video Info":
-            error = Error(message = "Please input valid video information.")
+            error = Error(message = "Please input valid video information.", name = "popup")
             error.popup()
             return
         elif path == "":
-            error = Error(title = "Warning!", message = f"Default download location selected: {Path.home()}")            
+            error = Error(title = "Warning!", message = f"Default download location selected: {Path.home()}", name = "popup")            
             error.popup()
             root.update()
 
@@ -394,9 +403,12 @@ def test_button():
     def print_widget(name: str):
         print(find_widgets_by_name(name).get())
 
-    error = Error(message= "This is a sample of what an error message might be" , name = "popup_message")
+    print("Test!")
+    
     # tkinter.Button(root, text = "test", command = partial(print_widget, name = "api_input")).place(x= 400, y = 100)
-    tkinter.Button(root, text = "test", command = error.popup).place(x= 400, y = 100)
+    
+    # error = Error(message= "This is a sample of what an error message might be" , name = "popup")
+    # tkinter.Button(root, text = "test", command = error.popup).place(x= 400, y = 100)
 
 def enumyrate(iterable: Iterable):
     counter = 0

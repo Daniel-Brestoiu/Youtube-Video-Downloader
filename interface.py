@@ -8,8 +8,8 @@ import typing
 
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk, font
-from ffmpeg_script import download_videos
-from api_logic import search_video
+from ffmpeg_script import *
+from api_logic import *
 from typing import List, Tuple, Iterable, IO, Any
 from functools import partial
 from PIL import Image, ImageTk
@@ -45,6 +45,7 @@ class Thumbnail_Image():
         """Downloads contents from self.url and stores it in a temp file referenced as self.temp_file."""
         self.temp_file = tempfile.NamedTemporaryFile()
         urllib.request.urlretrieve(url = self.url, filename= self.temp_file.name)
+        self.image = ImageTk.PhotoImage(Image.open(self.temp_file.name))
     
     def place_thumbnail_from_temp(self) -> None:
         """Takes image stored in self.temp_file, and stores it in self.image -> places self.image on canvas using tkinter canvas.create_image()"""
@@ -134,6 +135,76 @@ class Error():
     #Mode 1 popup colour #ffc3a9
     #Mode 2 popup colour #ffd8a9
     #Mode 3 popup colour #ffada9
+
+class Video():
+    def __init__(self,  master:canvas, video_id:str, thumbnail:Thumbnail_Image = None, name:str = None, channel:str = None, selected = True, yes_photo = None, no_photo = None, x:int = 0, y:int = 0, colour = None):
+        self.master = master
+        self.video_id = video_id
+        self.thumbnail = thumbnail
+        self.name = name
+        self.channel = channel
+        self.selected = selected
+        self.yes_photo = yes_photo
+        self.no_photo = no_photo
+        self.colour = colour
+        self.x = x
+        self.y = y
+
+        #Getting Thumbnail
+        thumbnail = Thumbnail_Image(url = f"https://img.youtube.com/vi/{self.video_id}/default.jpg")
+        thumbnail.download_from_url()
+        self.thumbnail = thumbnail
+
+        #Making check and x buttons' image
+        self.yes_photo = resize_image("check_mark.png", 10, 10)
+        self.no_photo = resize_image("x_mark.png", 10, 10)
+
+        #Setting background
+        current_mode = SEARCH_TYPE.get()
+        if current_mode == 2:
+            self.colour = "#e4e0ff"
+        elif current_mode == 3:
+            self.colour = "#ebffef"
+        #Colours: Mode2: "#b2a9ff"          Mode3: "#a9ffbc"
+        #Colours: Mode2: "#e4e0ff"          Mode3: "#ebffef"
+
+    def get_video(self):
+        return_value = search_video(video_id = self.video_id, API_KEY= retrieve_key())
+        
+        if return_value == "Invalid API Key":
+            error = Error(message = "Please input a valid Youtube V3 Data Api Key.", name = "popup")
+            error.popup()
+            return
+        elif return_value == "Invalid Video Info":
+            error = Error(message = "Please input valid video information.", name = "popup")
+            error.popup()
+            return
+        else:
+            title, channel_name, thumbnail_link, thumbnail_width, thumbnail_height = return_value
+
+        self.name = title
+        self.channel = channel_name
+
+    def draw_self(self):
+        self.master.create_rectangle(self.x - 65 , self.y - 50, self.x + 395, self.y + 50, fill = self.colour)
+
+        MODES = [(self.yes_photo, "1"),
+                (self.no_photo, "0")]
+        variable = tkinter.StringVar()
+        variable.set("1")
+        self.selected = variable
+
+        for image, mode in MODES:
+            button = tkinter.Radiobutton(master= self.master, image = image, variable = variable, value = mode, bg = self.colour, command = self.check_printable)
+            button.place(x = self.x + 315 + 40*int(mode), y = self.y + 5)
+        
+        thumbnail_placeholder = self.master.create_image((self.x, self.y), image = self.thumbnail.image)
+        tkinter.Label(self.master, text = self.name, bg = self.colour).place( x = self.x + 70, y= self.y - 25)
+        tkinter.Label(self.master, text = self.channel, bg = self.colour).place( x= self.x + 70, y= self.y )
+    
+    
+    def check_printable(self):
+        return self.selected.get()
 
 def init_screen() -> None:
     """Creates the general screen of app"""
@@ -243,7 +314,6 @@ def video_search_screen():
         return find_widgets_by_name("api_input").get()
 
     clear_canvas()
-
     canvas["background"] = "#A9EDFF"
 
     photo = resize_image("placeholder_image.png", 100, 100)
@@ -268,10 +338,26 @@ def video_search_screen():
 
 def playlist_search_screen() -> None:
     """Changes canvas to playlist search mode"""
-    
-    clear_canvas()
+    # Searching by channel and channel ID is inconsistent on youtube API, will not include as feature
+    # Search by playlist ID, and link to a video in the playlist.
+    # Creates scroll box of the videos in playlist, including thumbnail, name, channel, and a check/x box for including in downloads
 
+    def search():
+        pass
+
+
+    clear_canvas()
     canvas["background"] = "#b2a9ff"    
+
+    tkinter.Label(canvas, name = "playlist id label", text = "Playlist ID:", width = 10, anchor = "w", bg = "#b2a9ff").place(x= 20, y= 22)
+    tkinter.Label(canvas, name = "playlist link", text = "Playlist Link:", width = 10, anchor = "w", bg = "#b2a9ff").place(x= 20, y= 56)
+
+    tkinter.Entry(canvas, name = "playlist id input", width = 39).place(x= 110, y= 20)
+    tkinter.Entry(canvas, name = "playlist link input", width = 39).place(x= 110, y= 54)
+
+    tkinter.Button(canvas, name = "search by playlist button", text = "SEARCH", width = 50, height = 2, command = search).place(x= 20, y = 90)
+
+
     canvas.update()
     
 
@@ -398,17 +484,25 @@ def globalize_images() -> None:
     EYE_OPEN_IMAGE = resize_image("password eye open.png", 20, 20)
     EYE_CLOSED_IMAGE = resize_image("password eye closed.png", 20, 20 )
 
+def make_video_display(master:canvas, video_id:str, x:int, y:int):
+    video = Video(master = master, video_id = video_id, x = x, y = y)
+    video.get_video()
+    video.draw_self()
+
 #Experiment bois
 def test_button():
     def print_widget(name: str):
         print(find_widgets_by_name(name).get())
 
-    print("Test!")
+    def place_video():
+        test_video = Video(master = canvas, video_id = "wHAFcQY7PbM", x = 80, y = 200)
+        test_video.get_video()
+        test_video.draw_self()
     
     # tkinter.Button(root, text = "test", command = partial(print_widget, name = "api_input")).place(x= 400, y = 100)
     
     # error = Error(message= "This is a sample of what an error message might be" , name = "popup")
-    # tkinter.Button(root, text = "test", command = error.popup).place(x= 400, y = 100)
+    tkinter.Button(root, text = "test", command = place_video).place(x= 400, y = 100)
 
 def enumyrate(iterable: Iterable):
     counter = 0

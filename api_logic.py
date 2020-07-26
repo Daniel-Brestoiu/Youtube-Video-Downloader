@@ -89,7 +89,7 @@ def write_to_file(file_name: str, codes_list: List[str]) -> None:
 
     file_handle.close()
 
-def search_video(video_id: str, video_link: str, API_KEY:str) -> List[str]:
+def search_video(API_KEY:str, video_id: str, video_link: str = None, ) -> List[str]:
     """Given a youtube video identifier, finds the video in question.
     Downloads the video thumbnail as image
     Returns the Video Name, Channel name, thumbnail image name/location?"""
@@ -152,3 +152,9 @@ def download_playlist(playlistID: str, API_KEY:str) -> None:
     codes = find_unique_codes(find_videos_in_playlist((playlistID), API_KEY = API_KEY))
     write_to_file("downloads.txt", codes)
     download_videos(codes)
+
+def main():
+    pass
+
+if __name__ == "__main__":
+    main()

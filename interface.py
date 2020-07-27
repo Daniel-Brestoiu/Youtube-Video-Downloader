@@ -137,7 +137,7 @@ class Error():
     #Mode 3 popup colour #ffada9
 
 class Video():
-    def __init__(self,  master:canvas, video_id:str, thumbnail:Thumbnail_Image = None, name:str = None, channel:str = None, selected = True, yes_photo = None, no_photo = None, x:int = 0, y:int = 0, colour = None):
+    def __init__(self,  master:canvas, video_id:str, thumbnail:Thumbnail_Image = None, name:str = None, channel:str = None, selected = True, yes_photo = None, no_photo = None, x:int = 0, y:int = 0, colour = None, video_canvas:canvas = None):
         self.master = master
         self.video_id = video_id
         self.thumbnail = thumbnail
@@ -149,6 +149,7 @@ class Video():
         self.colour = colour
         self.x = x
         self.y = y
+        self.video_canvas = video_canvas
 
         #Getting Thumbnail
         thumbnail = Thumbnail_Image(url = f"https://img.youtube.com/vi/{self.video_id}/default.jpg")
@@ -186,25 +187,28 @@ class Video():
         self.channel = channel_name
 
     def draw_self(self):
-        self.master.create_rectangle(self.x - 65 , self.y - 50, self.x + 395, self.y + 50, fill = self.colour)
+        self.video_canvas = tkinter.Canvas(self.master, width = 430, height = 100, bg = self.colour, highlightthickness = 0, bd = 1, relief = "ridge",)
+        self.master.create_window((self.x -66, self.y), window = self.video_canvas, width = 430, height = 100, anchor = "w")
+
+        self.video_canvas.create_image((self.x - 5, self.y - 5), image = self.thumbnail.image)
+        self.video_canvas.create_text((self.x + 65, self.y - 25), text = self.name, anchor = "w",)
+        self.video_canvas.create_text((self.x + 65, self.y), text = self.channel, anchor = "w",)
 
         MODES = [(self.yes_photo, "1"),
-                (self.no_photo, "0")]
+                (self.no_photo, "2")]
         variable = tkinter.StringVar()
         variable.set("1")
         self.selected = variable
 
         for image, mode in MODES:
-            button = tkinter.Radiobutton(master= self.master, image = image, variable = variable, value = mode, bg = self.colour, command = self.check_printable)
-            button.place(x = self.x + 315 + 40*int(mode), y = self.y + 5)
-        
-        thumbnail_placeholder = self.master.create_image((self.x, self.y), image = self.thumbnail.image)
-        tkinter.Label(self.master, text = self.name, bg = self.colour).place( x = self.x + 70, y= self.y - 25)
-        tkinter.Label(self.master, text = self.channel, bg = self.colour).place( x= self.x + 70, y= self.y )
+            button = tkinter.Radiobutton(master= self.video_canvas, image = image, variable = variable, value = mode, bg = self.colour, command = self.check_printable,)
+            button.place(x = self.x + 320, y = self.y + 20*int(mode) - 30)
+
+        self.master.update()
     
     
     def check_printable(self):
-        return self.selected.get()
+        print(self.selected.get())
 
 def init_screen() -> None:
     """Creates the general screen of app"""
@@ -358,8 +362,21 @@ def playlist_search_screen() -> None:
     tkinter.Button(canvas, name = "search by playlist button", text = "SEARCH", width = 50, height = 2, command = search).place(x= 20, y = 90)
 
 
+    holder_frame = tkinter.Canvas(canvas, name = "holder frame", bg = "#a696ff", width = 455, height = 170, bd = 0, highlightthickness = 0, )
+    holder_frame.place(x = 20, y = 130)
+
+    secondary_canvas = tkinter.Canvas(holder_frame, name = "secondary canvas", bg= "#a696ff" , width = 440, height = 170, bd = 0, highlightthickness = 0,)
+    secondary_canvas.pack(side = "left", fill = "both")
+    secondary_canvas.create_rectangle( 0, 0, 438, 300, fill = "#e3d4ff", outline = "")
+
+    scroll_bar = tkinter.Scrollbar(master = holder_frame, orient = "vertical", name = "scroll bar", bg ="#e3d4ff" )# scroll_bar.place(x = 465, y = 265) 
+    scroll_bar.pack(side = "right", fill = "y")
+    scroll_bar.config(command = secondary_canvas.yview)
+    secondary_canvas.config(yscrollcommand= scroll_bar.set)
+    secondary_canvas.configure(scrollregion = secondary_canvas.bbox("all"))
+
     canvas.update()
-    
+
 
 def youtube_search_screen() -> None:
     """Changes canvas to general youtube search mode"""
@@ -371,9 +388,15 @@ def youtube_search_screen() -> None:
 
 def clear_canvas() -> None:
     """Loops through and deletes objects stored as children of canvas. """
+    try:
+        find_widgets_by_name("scroll bar").destroy()
+    except:
+        pass
+
     canvas.delete("all")
     for child in canvas.winfo_children():
         child.destroy()
+    
 
 def clear_thumbnails() -> None:
     """Properly closes temp files of all Thumbnail_Image objects. Unlinks reference to all Thumbnail_Image objects."""
@@ -495,7 +518,9 @@ def test_button():
         print(find_widgets_by_name(name).get())
 
     def place_video():
-        test_video = Video(master = canvas, video_id = "wHAFcQY7PbM", x = 80, y = 200)
+        secondary_canvas = find_canvas_widget_by_name("holder frame").children["secondary canvas"]
+
+        test_video = Video(master = secondary_canvas, video_id = "wHAFcQY7PbM", x = 70, y = 55)
         test_video.get_video()
         test_video.draw_self()
     

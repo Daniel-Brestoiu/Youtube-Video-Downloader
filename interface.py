@@ -361,21 +361,34 @@ def playlist_search_screen() -> None:
 
     tkinter.Button(canvas, name = "search by playlist button", text = "SEARCH", width = 50, height = 2, command = search).place(x= 20, y = 90)
 
+    make_scroll_field(x = 20, y = 130)
+    canvas.update()
 
-    holder_frame = tkinter.Canvas(canvas, name = "holder frame", bg = "#a696ff", width = 455, height = 170, bd = 0, highlightthickness = 0, )
-    holder_frame.place(x = 20, y = 130)
+def make_scroll_field(x, y):
 
-    secondary_canvas = tkinter.Canvas(holder_frame, name = "secondary canvas", bg= "#a696ff" , width = 440, height = 170, bd = 0, highlightthickness = 0,)
+    colour1 = "#aaaaaa"
+    colour2 = "#aaaaaa"
+
+    if SEARCH_TYPE.get() == 2:
+        colour1 = "#a696ff"
+        colour2 = "#e3d4ff"
+    elif SEARCH_TYPE.get() == 3:
+        colour1 = "#a9ffbc"
+        colour2 = "#d4fff7"
+        
+
+    holder_frame = tkinter.Canvas(canvas, name = "holder frame", bg = colour1, width = 455, height = 170, bd = 0, highlightthickness = 0, )
+    holder_frame.place(x = x, y = y)
+
+    secondary_canvas = tkinter.Canvas(holder_frame, name = "secondary canvas", bg= colour1 , width = 440, height = 170, bd = 0, highlightthickness = 0,)
     secondary_canvas.pack(side = "left", fill = "both")
-    secondary_canvas.create_rectangle( 0, 0, 438, 300, fill = "#e3d4ff", outline = "")
+    secondary_canvas.create_rectangle( 0, 0, 438, 300, fill = colour2, outline = "")
 
-    scroll_bar = tkinter.Scrollbar(master = holder_frame, orient = "vertical", name = "scroll bar", bg ="#e3d4ff" )# scroll_bar.place(x = 465, y = 265) 
+    scroll_bar = tkinter.Scrollbar(master = holder_frame, orient = "vertical", name = "scroll bar", bg = colour2 )
     scroll_bar.pack(side = "right", fill = "y")
     scroll_bar.config(command = secondary_canvas.yview)
     secondary_canvas.config(yscrollcommand= scroll_bar.set)
     secondary_canvas.configure(scrollregion = secondary_canvas.bbox("all"))
-
-    canvas.update()
 
 
 def youtube_search_screen() -> None:
@@ -384,14 +397,13 @@ def youtube_search_screen() -> None:
     clear_canvas()
     
     canvas["background"] = "#a9ffbc"
+
+    make_scroll_field(x = 20, y = 130)
+
     canvas.update()
 
 def clear_canvas() -> None:
     """Loops through and deletes objects stored as children of canvas. """
-    try:
-        find_widgets_by_name("scroll bar").destroy()
-    except:
-        pass
 
     canvas.delete("all")
     for child in canvas.winfo_children():
@@ -412,7 +424,7 @@ def clear_thumbnails() -> None:
 def download_button() -> None:
     """Places download button on app. Also contains download function."""
 
-    def download() -> None:
+    def download_video() -> None:
         path = retrieve_path()
         video = retrieve_video()
         
@@ -427,9 +439,14 @@ def download_button() -> None:
 
         download_videos(video, path= path)
 
+    def download_playlist() -> None:
+        pass
+
+    def download_search() -> None:
+        pass
     
     tkinter.Button(root, text = "DOWNLOAD", name = "download", width = 50, height = 2, 
-                    command = download).place(x = 25, y = 450)
+                    command = download_video).place(x = 25, y = 450)
 
 
 def retrieve_key() -> str:

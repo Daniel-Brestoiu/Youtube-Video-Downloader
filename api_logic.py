@@ -148,6 +148,96 @@ def search_video(API_KEY:str, video_id: str, video_link: str = None, ) -> List[s
 
     return info
 
+def parse_for_playlist_id(playlist_link:str)-> str:
+    try:
+        regex_pattern = r"list=(.{34})"
+        match = re.search(regex_pattern, string = playlist_link)
+        link_id = match[0][5:]
+        return link_id
+    except:
+        #Not valid link
+        pass
+
+    return None
+
+def find_playlist(API_KEY:str, playlist_id:str , playlist_link_id:str = None) -> List[str]:
+    
+    try:
+        YOUTUBE = build("youtube", "v3", developerKey=API_KEY)
+    except Exception:
+        return ["Invalid API Key"]
+
+    if len(playlist_id) != 34:
+        #Definitely invalid playlist id
+        try:
+            request = YOUTUBE.playlistItems().list(part="contentDetails", playlistId= playlist_link_id, maxResults = 50) # maxResults = 50
+            response = request.execute()
+
+            videos_list = get_next_page(response, YOUTUBE, playlist_link_id)
+            if "Done" in videos_list:
+                videos_list = []
+
+            for video in (response["items"]):
+                videos_list.append(video["contentDetails"]["videoId"])
+            return videos_list
+
+        except:
+            return ["Invalid Playlist Id"]
+
+    else:
+        #Maybe valid playlist id?
+        try:
+            request = YOUTUBE.playlistItems().list(part="contentDetails", playlistId= playlist_id, maxResults = 50)
+            response = request.execute()
+
+
+            videos_list = get_next_page(response, YOUTUBE, playlist_id)
+            if "Done" in videos_list:
+                videos_list = []
+
+            for video in (response["items"]):
+                videos_list.append(video["contentDetails"]["videoId"])
+
+            return videos_list
+
+        except:
+            try:
+                request = YOUTUBE.playlistItems().list(part="contentDetails", playlistId= playlist_link_id, maxResults = 50)
+                response = request.execute()
+
+                videos_list = get_next_page(response, YOUTUBE, playlist_link_id)
+                if "Done" in videos_list:
+                    videos_list = []
+
+                for video in (response["items"]):
+                    videos_list.append(video["contentDetails"]["videoId"])
+                
+                return videos_list
+
+            except:
+                return ["Invalid Playlist Id"]
+
+def get_next_page(response:dict, YOUTUBE:build, playlist_id:str) -> List[str]:
+    try:
+        next_page_token = response["nextPageToken"]
+
+        request = YOUTUBE.playlistItems().list(part="contentDetails", playlistId= playlist_id, pageToken = next_page_token, maxResults = 50)
+        response = request.execute()
+
+        videos_list: List[str] = []
+        for video in (response["items"]):
+            videos_list.append(video["contentDetails"]["videoId"])
+
+        more = get_next_page(response, YOUTUBE,playlist_id)
+        if more[0] != "Done":
+            for video in more:
+                videos_list.append(video)
+        
+        return videos_list
+
+    except:
+        return ["Done"]
+
 def download_playlist(playlistID: str, API_KEY:str) -> None:
     codes = find_unique_codes(find_videos_in_playlist((playlistID), API_KEY = API_KEY))
     write_to_file("downloads.txt", codes)

@@ -347,7 +347,26 @@ def playlist_search_screen() -> None:
     # Creates scroll box of the videos in playlist, including thumbnail, name, channel, and a check/x box for including in downloads
 
     def search():
-        pass
+        id_input = find_canvas_widget_by_name("playlist id input").get()
+        link_input = find_canvas_widget_by_name("playlist link input").get()
+        api_key_input = find_widgets_by_name("api_input").get()
+        
+        link_id = parse_for_playlist_id(link_input)
+
+        result = find_playlist(API_KEY = api_key_input, playlist_id = id_input, playlist_link_id =  link_id)
+        
+        if result[0] == "Invalid API Key":
+            error = Error(message = "Please input a valid Youtube V3 Data Api Key.", name = "popup")
+            error.popup()
+            return
+        elif result[0] == "Invalid Playlist Id":
+            error = Error(message = "Please input valid playlist information.", name = "popup")
+            error.popup()
+            return
+        else:
+            #No invalid input, result must make sense
+            print(len(result))
+            print(result)
 
 
     clear_canvas()

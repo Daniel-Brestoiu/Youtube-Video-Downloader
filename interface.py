@@ -509,12 +509,21 @@ def download_button() -> None:
             canvas.update()
 
         # time.sleep(2)
-        download_videos(video, path= path)
+        root.after(1000, download_videos(video, path= path))
+        # download_videos(video, path= path)
 
         popup = Error(message = "Video download complete!", title = "Good news!", name = "popup")
         popup.popup()
 
     def download_playlist() -> None:
+
+        def download_videos_in_playlist() -> None:
+            for video in VIDEOS_LISTED:
+                want_download = video.check_printable()
+
+                if want_download == "1":
+                    ffmpeg_script.download_video(video_code = video.video_id, path = path)
+
         path = retrieve_path()
 
         #These popups are too slow to make it before download begins :c
@@ -526,16 +535,11 @@ def download_button() -> None:
         else:
             message = Error(title ="Don't Worry!", message = "Download has begun. Be patient, this may take a while.", name = "popup")
             message.popup()
-            canvas.update()
             root.update()
             canvas.update()
 
         # time.sleep(2)
-        for video in VIDEOS_LISTED:
-            want_download = video.check_printable()
-
-            if want_download == "1":
-                ffmpeg_script.download_video(video_code = video.video_id, path = path)
+        root.after(1000, download_videos_in_playlist())
 
         popup = Error(message = "Playlist download complete!", title = "Good news!", name = "popup")
         popup.popup()

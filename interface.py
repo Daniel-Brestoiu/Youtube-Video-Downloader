@@ -5,6 +5,7 @@ import tkinter
 import ffmpeg_script
 import api_logic
 import typing
+import time
 
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk, font
@@ -30,7 +31,7 @@ EYE_MODE = 0
 VIDEOS_LISTED = []
 
 class Thumbnail_Image():
-    def __init__(self, url: str = None, temp_file: IO[Any] = None, scale: int = None, width: int = None, height: int = None, image = None):
+    def __init__(self, url: str = None, temp_file: IO[Any] = None, scale: int = None, width: int = None, height: int = None, image = None, overlord = None):
         global THUMBNAILS_LIST
 
         self.url = url
@@ -39,6 +40,7 @@ class Thumbnail_Image():
         self.width = width
         self.height = height
         self.image = image
+        self.overlord = overlord
 
         THUMBNAILS_LIST.append(self)
 
@@ -154,7 +156,7 @@ class Video():
         self.video_canvas = video_canvas
 
         #Getting Thumbnail
-        thumbnail = Thumbnail_Image(url = f"https://img.youtube.com/vi/{self.video_id}/default.jpg")
+        thumbnail = Thumbnail_Image(url = f"https://img.youtube.com/vi/{self.video_id}/default.jpg", overlord = self)
         thumbnail.download_from_url()
         self.thumbnail = thumbnail
 
@@ -396,7 +398,8 @@ def playlist_search_screen() -> None:
 
                 VIDEOS_LISTED.append(video)
 
-            # print(VIDEOS_LISTED)            
+            popup = Error(message = "Playlist Search complete! :D", title = "Good news!", name = "popup")      
+            popup.popup()
 
     clear_canvas()
     canvas["background"] = "#b2a9ff"    
@@ -489,6 +492,7 @@ def download_button() -> None:
         path = retrieve_path()
         video = retrieve_video()
         
+        #These popups are too slow to make it before download begins :c
         if video == "Invalid Video Info":
             error = Error(message = "Please input valid video information.", name = "popup")
             error.popup()
@@ -497,11 +501,45 @@ def download_button() -> None:
             error = Error(title = "Warning!", message = f"Default download location selected: {Path.home()}", name = "popup")            
             error.popup()
             root.update()
+            canvas.update()
+        else:
+            message = Error(title = "Don't Worry!", message = "Download has begun.", name = "popup")
+            message.popup()
+            root.update()
+            canvas.update()
 
+        # time.sleep(2)
         download_videos(video, path= path)
 
+        popup = Error(message = "Video download complete!", title = "Good news!", name = "popup")
+        popup.popup()
+
     def download_playlist() -> None:
-        print("Testing :D")
+        path = retrieve_path()
+
+        #These popups are too slow to make it before download begins :c
+        if path == "":
+            error = Error(title = "Warning!", message = f"Default download location selected: {Path.home()}", name = "popup")            
+            error.popup()
+            root.update()
+            canvas.update()
+        else:
+            message = Error(title ="Don't Worry!", message = "Download has begun. Be patient, this may take a while.", name = "popup")
+            message.popup()
+            canvas.update()
+            root.update()
+            canvas.update()
+
+        # time.sleep(2)
+        for video in VIDEOS_LISTED:
+            want_download = video.check_printable()
+
+            if want_download == "1":
+                ffmpeg_script.download_video(video_code = video.video_id, path = path)
+
+        popup = Error(message = "Playlist download complete!", title = "Good news!", name = "popup")
+        popup.popup()
+
 
     def download_search() -> None:
         print("Also Testing :D")

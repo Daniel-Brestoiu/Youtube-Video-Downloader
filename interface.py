@@ -27,6 +27,8 @@ EYE_CLOSED_IMAGE = tkinter.PhotoImage(file = "password eye closed.png") # Mode 0
 EYE_OPEN_IMAGE = tkinter.PhotoImage(file = "password eye open.png") # Mode 1 
 EYE_MODE = 0
 
+VIDEOS_LISTED = []
+
 class Thumbnail_Image():
     def __init__(self, url: str = None, temp_file: IO[Any] = None, scale: int = None, width: int = None, height: int = None, image = None):
         global THUMBNAILS_LIST
@@ -190,9 +192,9 @@ class Video():
         self.video_canvas = tkinter.Canvas(self.master, width = 430, height = 100, bg = self.colour, highlightthickness = 0, bd = 1, relief = "ridge",)
         self.master.create_window((self.x -66, self.y), window = self.video_canvas, width = 430, height = 100, anchor = "w")
 
-        self.video_canvas.create_image((self.x - 5, self.y - 5), image = self.thumbnail.image)
-        self.video_canvas.create_text((self.x + 65, self.y - 25), text = self.name, anchor = "w",)
-        self.video_canvas.create_text((self.x + 65, self.y), text = self.channel, anchor = "w",)
+        self.video_canvas.create_image((70- 5, 55 - 5), image = self.thumbnail.image)
+        self.video_canvas.create_text((70 + 65, 55 - 25), text = self.name, anchor = "w",)
+        self.video_canvas.create_text((70 + 65, 55), text = self.channel, anchor = "w",)
 
         MODES = [(self.yes_photo, "1"),
                 (self.no_photo, "2")]
@@ -202,13 +204,16 @@ class Video():
 
         for image, mode in MODES:
             button = tkinter.Radiobutton(master= self.video_canvas, image = image, variable = variable, value = mode, bg = self.colour, command = self.check_printable,)
-            button.place(x = self.x + 320, y = self.y + 20*int(mode) - 30)
+            button.place(x = 70 + 320, y = 55 + 20*int(mode) - 30)
 
         self.master.update()
+
+    def destroy_temp_file(self):
+        self.thumbnail.destroy()
     
     
     def check_printable(self):
-        print(self.selected.get())
+        return self.selected.get()
 
 def init_screen() -> None:
     """Creates the general screen of app"""
@@ -345,8 +350,10 @@ def playlist_search_screen() -> None:
     # Searching by channel and channel ID is inconsistent on youtube API, will not include as feature
     # Search by playlist ID, and link to a video in the playlist.
     # Creates scroll box of the videos in playlist, including thumbnail, name, channel, and a check/x box for including in downloads
+    global VIDEOS_LISTED
 
     def search():
+        global VIDEOS_LISTED
         id_input = find_canvas_widget_by_name("playlist id input").get()
         link_input = find_canvas_widget_by_name("playlist link input").get()
         api_key_input = find_widgets_by_name("api_input").get()
@@ -365,9 +372,29 @@ def playlist_search_screen() -> None:
             return
         else:
             #No invalid input, result must make sense
-            print(len(result))
-            print(result)
+            num_videos = len(result)
+            # print(result)
 
+            #7 + 100 pixels for padding for each video, + 7 padding at the very end
+            height_of_scroll_field = 105*num_videos + 4
+            close_scroll_field_temp()
+            delete_scroll_field()
+            make_scroll_field(x= 20, y= 130, height = height_of_scroll_field)
+
+            VIDEOS_LISTED = []
+            for num in range(len(result)):
+                video_id = result[num]
+                # print(video_id)
+
+                secondary_canvas = find_canvas_widget_by_name("holder frame").children["secondary canvas"]
+
+                video = Video(master = secondary_canvas, video_id = video_id, x = 70, y = 55 + 105*num)
+                video.get_video()
+                video.draw_self()
+
+                VIDEOS_LISTED.append(video)
+
+            # print(VIDEOS_LISTED)            
 
     clear_canvas()
     canvas["background"] = "#b2a9ff"    
@@ -380,10 +407,10 @@ def playlist_search_screen() -> None:
 
     tkinter.Button(canvas, name = "search by playlist button", text = "SEARCH", width = 50, height = 2, command = search).place(x= 20, y = 90)
 
-    make_scroll_field(x = 20, y = 130)
+    make_scroll_field(x = 20, y = 130, height= 300)
     canvas.update()
 
-def make_scroll_field(x, y):
+def make_scroll_field(x, y, height):
 
     colour1 = "#aaaaaa"
     colour2 = "#aaaaaa"
@@ -401,7 +428,7 @@ def make_scroll_field(x, y):
 
     secondary_canvas = tkinter.Canvas(holder_frame, name = "secondary canvas", bg= colour1 , width = 440, height = 170, bd = 0, highlightthickness = 0,)
     secondary_canvas.pack(side = "left", fill = "both")
-    secondary_canvas.create_rectangle( 0, 0, 438, 300, fill = colour2, outline = "")
+    secondary_canvas.create_rectangle( 0, 0, 438, height, fill = colour2, outline = "")
 
     scroll_bar = tkinter.Scrollbar(master = holder_frame, orient = "vertical", name = "scroll bar", bg = colour2 )
     scroll_bar.pack(side = "right", fill = "y")
@@ -417,10 +444,19 @@ def youtube_search_screen() -> None:
     
     canvas["background"] = "#a9ffbc"
 
-    make_scroll_field(x = 20, y = 130)
+    make_scroll_field(x = 20, y = 130, height = 300)
 
     canvas.update()
 
+def close_scroll_field_temp() -> None:
+    for video in VIDEOS_LISTED:
+        video.destroy_temp_file()
+        # print(f"Temp for {video} is destroyed")
+
+def delete_scroll_field() -> None:
+    holder_frame = find_canvas_widget_by_name("holder frame")
+    holder_frame.destroy()
+    
 def clear_canvas() -> None:
     """Loops through and deletes objects stored as children of canvas. """
 
@@ -551,9 +587,11 @@ def make_video_display(master:canvas, video_id:str, x:int, y:int):
 #Experiment bois
 def test_button():
     def print_widget(name: str):
+        #DEPRECATED
         print(find_widgets_by_name(name).get())
 
     def place_video():
+        #DEPRECATED
         secondary_canvas = find_canvas_widget_by_name("holder frame").children["secondary canvas"]
 
         test_video = Video(master = secondary_canvas, video_id = "wHAFcQY7PbM", x = 70, y = 55)
@@ -563,7 +601,7 @@ def test_button():
     # tkinter.Button(root, text = "test", command = partial(print_widget, name = "api_input")).place(x= 400, y = 100)
     
     # error = Error(message= "This is a sample of what an error message might be" , name = "popup")
-    tkinter.Button(root, text = "test", command = place_video).place(x= 400, y = 100)
+    # tkinter.Button(root, text = "test", command = place_video).place(x= 400, y = 100)
 
 def enumyrate(iterable: Iterable):
     counter = 0

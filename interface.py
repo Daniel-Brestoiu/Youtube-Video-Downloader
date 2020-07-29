@@ -377,8 +377,10 @@ def playlist_search_screen() -> None:
 
             #7 + 100 pixels for padding for each video, + 7 padding at the very end
             height_of_scroll_field = 105*num_videos + 4
-            close_scroll_field_temp()
+
+            clear_thumbnails()
             delete_scroll_field()
+
             make_scroll_field(x= 20, y= 130, height = height_of_scroll_field)
 
             VIDEOS_LISTED = []
@@ -448,17 +450,13 @@ def youtube_search_screen() -> None:
 
     canvas.update()
 
-def close_scroll_field_temp() -> None:
-    for video in VIDEOS_LISTED:
-        video.destroy_temp_file()
-        # print(f"Temp for {video} is destroyed")
-
 def delete_scroll_field() -> None:
     holder_frame = find_canvas_widget_by_name("holder frame")
     holder_frame.destroy()
     
 def clear_canvas() -> None:
     """Loops through and deletes objects stored as children of canvas. """
+    clear_thumbnails()
 
     canvas.delete("all")
     for child in canvas.winfo_children():

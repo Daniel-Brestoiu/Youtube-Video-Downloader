@@ -477,6 +477,14 @@ def clear_thumbnails() -> None:
 def download_button() -> None:
     """Places download button on app. Also contains download function."""
 
+    def download() -> None:
+        if SEARCH_TYPE.get() == 1:
+            download_video()
+        elif SEARCH_TYPE.get() == 2:
+            download_playlist()
+        elif SEARCH_TYPE.get() == 3:
+            download_search()
+
     def download_video() -> None:
         path = retrieve_path()
         video = retrieve_video()
@@ -493,13 +501,13 @@ def download_button() -> None:
         download_videos(video, path= path)
 
     def download_playlist() -> None:
-        pass
+        print("Testing :D")
 
     def download_search() -> None:
-        pass
+        print("Also Testing :D")
     
     tkinter.Button(root, text = "DOWNLOAD", name = "download", width = 50, height = 2, 
-                    command = download_video).place(x = 25, y = 450)
+                    command = download).place(x = 25, y = 450)
 
 
 def retrieve_key() -> str:
@@ -513,17 +521,23 @@ def retrieve_path() -> str:
 def retrieve_video() -> Tuple[str,str]:
     """Calls regex to find video id from an inputted video link. Returns a tuple of video ids from input and parsed from link, respectively. """
     
+    video_id_input = find_canvas_widget_by_name("video id").get()      
+    video_link_input = find_canvas_widget_by_name("video link").get()
+
     try:
-        video_id_input = find_canvas_widget_by_name("video id").get()      
-        video_link_input = find_canvas_widget_by_name("video link").get()
-        
         regex_pattern = r"\?v=(.{11})"
         capture_groups = re.search(regex_pattern, video_link_input) 
         video_link_id = capture_groups[0][3:]
+        
+        return (video_id_input, video_link_id)
     except:
-        return "Invalid Video Info"
+        #Invalid Link Input
+        if len(video_id_input) != 11:
+            return "Invalid Video Info"
 
-    return (video_id_input, video_link_id)
+        return [video_id_input]
+
+    
 
 def find_widgets_by_name(name: str):
     """Returns the widget that was named in input."""

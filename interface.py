@@ -527,16 +527,21 @@ def download_button() -> None:
         path = retrieve_path()
 
         #These popups are too slow to make it before download begins :c
-        if path == "":
+        
+        if len(VIDEOS_LISTED) == 0:
+            error = Error(message = "No playlist or videos have been searched!", name = "popup")
+            error.popup()
+            root.update()
+            return
+        elif path == "":
             error = Error(title = "Warning!", message = f"Default download location selected: {Path.home()}", name = "popup")            
             error.popup()
             root.update()
-            canvas.update()
         else:
             message = Error(title ="Don't Worry!", message = "Download has begun. Be patient, this may take a while.", name = "popup")
             message.popup()
             root.update()
-            canvas.update()
+
 
         # time.sleep(2)
         root.after(1000, download_videos_in_playlist())

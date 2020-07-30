@@ -7,21 +7,20 @@ from typing import Tuple, List
 
 def query(search_item: str, API_KEY:str) -> List[Tuple[str, str]]:
     """ Search youtube for input parameter.
-        Returns list of 5 results and their video IDs
+        Returns list of 10 results and their video IDs
     """
     YOUTUBE = build("youtube", "v3", developerKey=API_KEY)
 
     assert type(search_item) == str, "Improper search code"
-    request: googleapiclient.http.HttpRequest = YOUTUBE.search().list(q=search_item,
-                                                                      part="snippet",
-                                                                      type="video")
+    request: googleapiclient.http.HttpRequest = YOUTUBE.search().list(q=search_item, part="snippet", type="video", maxResults = 10)
     result = request.execute()
 
-    results_list: List[Tuple[str, str]] = []
-    for item in result["items"]:
-        results_list.append((item['snippet']["title"], item["id"]["videoId"]))
+    # results_list: List[Tuple[str, str]] = []
+    # for item in result["items"]:
+    #     results_list.append((item['snippet']["title"], item["id"]["videoId"]))
 
-    return results_list
+    # return results_list
+    return result
 
 
 def find_videos_in_playlist(playlistID: str, API_KEY:str) -> List[str]:

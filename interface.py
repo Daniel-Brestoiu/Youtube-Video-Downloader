@@ -383,7 +383,7 @@ def playlist_search_screen() -> None:
             clear_thumbnails()
             delete_scroll_field()
 
-            make_scroll_field(x= 20, y= 130, height = height_of_scroll_field)
+            make_scroll_field(x= 20, y= 130, scroll_height = height_of_scroll_field)
 
             VIDEOS_LISTED = []
             for num in range(len(result)):
@@ -412,10 +412,10 @@ def playlist_search_screen() -> None:
 
     tkinter.Button(canvas, name = "search by playlist button", text = "SEARCH", width = 50, height = 2, command = search).place(x= 20, y = 90)
 
-    make_scroll_field(x = 20, y = 130, height= 300)
+    make_scroll_field(x = 20, y = 130, scroll_height= 300)
     canvas.update()
 
-def make_scroll_field(x, y, height):
+def make_scroll_field(x, y, scroll_height:int, height:int = 170) -> None:
 
     colour1 = "#aaaaaa"
     colour2 = "#aaaaaa"
@@ -428,12 +428,12 @@ def make_scroll_field(x, y, height):
         colour2 = "#d4fff7"
         
 
-    holder_frame = tkinter.Canvas(canvas, name = "holder frame", bg = colour1, width = 455, height = 170, bd = 0, highlightthickness = 0, )
+    holder_frame = tkinter.Canvas(canvas, name = "holder frame", bg = colour1, width = 455, height = height, bd = 0, highlightthickness = 0, )
     holder_frame.place(x = x, y = y)
 
-    secondary_canvas = tkinter.Canvas(holder_frame, name = "secondary canvas", bg= colour1 , width = 440, height = 170, bd = 0, highlightthickness = 0,)
+    secondary_canvas = tkinter.Canvas(holder_frame, name = "secondary canvas", bg= colour1 , width = 440, height = height, bd = 0, highlightthickness = 0,)
     secondary_canvas.pack(side = "left", fill = "both")
-    secondary_canvas.create_rectangle( 0, 0, 438, height, fill = colour2, outline = "")
+    secondary_canvas.create_rectangle( 0, 0, 438, scroll_height, fill = colour2, outline = "")
 
     scroll_bar = tkinter.Scrollbar(master = holder_frame, orient = "vertical", name = "scroll bar", bg = colour2 )
     scroll_bar.pack(side = "right", fill = "y")
@@ -445,11 +445,23 @@ def make_scroll_field(x, y, height):
 def youtube_search_screen() -> None:
     """Changes canvas to general youtube search mode"""
     
+    def search():
+        search_input = find_canvas_widget_by_name(name = "youtube search field").get()
+        api_key_input = find_widgets_by_name("api_input").get()
+        
+        results = query(search_item = search_input, API_KEY = api_key_input) 
+        print(results)
+
     clear_canvas()
     
-    canvas["background"] = "#a9ffbc"
+    canvas["background"] = "#a9ffbc" #This colour is pretty yuck
+    # also consider: ffb2a9
 
-    make_scroll_field(x = 20, y = 130, height = 300)
+    make_scroll_field(x = 20, y = 95, scroll_height = 300, height = 200)
+
+    tkinter.Label(canvas, name = "search youtube label", text = "Search Youtube:", bg = "#a9ffbc").place(x= 20,y = 20)
+    tkinter.Entry(canvas, name = "youtube search field", width = 36,).place(x = 135, y = 19)
+    tkinter.Button(canvas, name = "search by playlist button", text = "SEARCH", width = 50, height = 2, command = search).place(x= 20, y = 55)
 
     canvas.update()
 
@@ -492,7 +504,6 @@ def download_button() -> None:
         path = retrieve_path()
         video = retrieve_video()
         
-        #These popups are too slow to make it before download begins :c
         if video == "Invalid Video Info":
             error = Error(message = "Please input valid video information.", name = "popup")
             error.popup()
@@ -508,9 +519,7 @@ def download_button() -> None:
             root.update()
             canvas.update()
 
-        # time.sleep(2)
         root.after(1000, download_videos(video, path= path))
-        # download_videos(video, path= path)
 
         popup = Error(message = "Video download complete!", title = "Good news!", name = "popup")
         popup.popup()
@@ -526,7 +535,6 @@ def download_button() -> None:
 
         path = retrieve_path()
 
-        #These popups are too slow to make it before download begins :c
         
         if len(VIDEOS_LISTED) == 0:
             error = Error(message = "No playlist or videos have been searched!", name = "popup")
@@ -542,8 +550,6 @@ def download_button() -> None:
             message.popup()
             root.update()
 
-
-        # time.sleep(2)
         root.after(1000, download_videos_in_playlist())
 
         popup = Error(message = "Playlist download complete!", title = "Good news!", name = "popup")

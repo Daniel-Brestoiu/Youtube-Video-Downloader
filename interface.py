@@ -234,6 +234,7 @@ def init_screen() -> None:
     
     tkinter.Button(root, name = "path_button", text = "Browse", width = 8, command = select_path).place(x = 415, y = 53)
     tkinter.Button(root, name = "secret_button", image = EYE_CLOSED_IMAGE, command = swap_entry_mode).place(x = 466, y = 12)
+    tkinter.Button(root, name = "help button", text = "HELP", width = 5, pady= 5, command= help_me).place(x= 445, y = 97)
 
 def select_path() -> None:
     """Opens popup prompting user to pick a directory. Fills 'path' entry widget with path."""
@@ -246,6 +247,28 @@ def select_path() -> None:
     entry.delete(0, "end")
     entry.insert(0, directory)
 
+def help_me() -> None:
+
+    def popup_message(msg):
+        norm_font = ("Helvetica", 13)
+        
+        pop_up = tkinter.Tk()
+        pop_up.wm_title("Helper")
+        label = tkinter.Label(pop_up, text = msg, font = norm_font, width = 75, height = 13)
+
+        label.pack(side= "right", fill = "x", pady = 10)
+
+    message = """
+    Instructions: 
+    Gosh I sure bet you wish this was useful huh
+
+    Search by Video mode:
+
+    Search by Playlist mode:
+
+    Search for Video mode:
+    """
+    popup_message(message)
 
 #Different search mode fellas
 def mode_buttons() -> None:
@@ -335,7 +358,7 @@ def video_search_screen():
     tkinter.Label(canvas, name = "video link label", text = "Video Link:", width = 10, anchor = "w", bg = "#A9EDFF",).place(x= 17, y = 164) 
     tkinter.Label(canvas, name = "video found label", text = "No Video Searched Yet", bg = "#A9EDFF", anchor = "w",).place(x =145, y = 25)
     tkinter.Label(canvas, name = "youtuber of video label", text = "No Channel Posted This Video", bg = "#A9EDFF", anchor = "w").place(x = 145, y = 55)
-    tkinter.Label(canvas, name = "instructions label", text = "Provide input then click search. Download if correct video is found.", bg = "#A9EDFF", anchor = "w").place(x = 20, y = 220)
+    tkinter.Label(canvas, name = "instructions label", text = "Provide input then click search. Download if correct video is found.", bg = "#A9EDFF", anchor = "w").place(x = 40, y = 220)
 
     tkinter.Entry(canvas, name = "video id", width = 40).place(x = 100, y = 125)
     tkinter.Entry(canvas, name = "video link", width = 40).place(x = 100, y = 165)

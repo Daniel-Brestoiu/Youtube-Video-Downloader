@@ -15,12 +15,11 @@ def query(search_item: str, API_KEY:str) -> List[Tuple[str, str]]:
     request: googleapiclient.http.HttpRequest = YOUTUBE.search().list(q=search_item, part="snippet", type="video", maxResults = 10)
     result = request.execute()
 
-    # results_list: List[Tuple[str, str]] = []
-    # for item in result["items"]:
-    #     results_list.append((item['snippet']["title"], item["id"]["videoId"]))
+    results_list: List[Tuple[str, str]] = []
+    for item in result["items"]:
+        results_list.append((item['snippet']["title"], item["id"]["videoId"]))
 
-    # return results_list
-    return result
+    return results_list
 
 
 def find_videos_in_playlist(playlistID: str, API_KEY:str) -> List[str]:

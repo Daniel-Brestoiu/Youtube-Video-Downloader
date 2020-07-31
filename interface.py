@@ -141,7 +141,7 @@ class Error():
     #Mode 3 popup colour #ffada9
 
 class Video():
-    def __init__(self,  master:canvas, video_id:str, thumbnail:Thumbnail_Image = None, name:str = None, channel:str = None, selected = True, yes_photo = None, no_photo = None, x:int = 0, y:int = 0, colour = None, video_canvas:canvas = None):
+    def __init__(self,  master:canvas, video_id:str, thumbnail:Thumbnail_Image = None, name:str = None, channel:str = None, selected = "1", yes_photo = None, no_photo = None, x:int = 0, y:int = 0, colour = None, video_canvas:canvas = None):
         self.master = master
         self.video_id = video_id
         self.thumbnail = thumbnail
@@ -201,7 +201,7 @@ class Video():
         MODES = [(self.yes_photo, "1"),
                 (self.no_photo, "2")]
         variable = tkinter.StringVar()
-        variable.set("1")
+        variable.set(self.selected)
         self.selected = variable
 
         for image, mode in MODES:
@@ -212,7 +212,6 @@ class Video():
 
     def destroy_temp_file(self):
         self.thumbnail.destroy()
-    
     
     def check_printable(self):
         return self.selected.get()
@@ -446,11 +445,35 @@ def youtube_search_screen() -> None:
     """Changes canvas to general youtube search mode"""
     
     def search():
+        global VIDEOS_LISTED
         search_input = find_canvas_widget_by_name(name = "youtube search field").get()
         api_key_input = find_widgets_by_name("api_input").get()
         
         results = query(search_item = search_input, API_KEY = api_key_input) 
-        print(results)
+
+
+        height_of_scroll_field = 105*len(results) + 4
+
+        clear_thumbnails()
+        delete_scroll_field()
+        make_scroll_field(x= 20, y= 95, scroll_height = height_of_scroll_field, height = 200)
+
+        secondary_canvas = find_canvas_widget_by_name("holder frame").children["secondary canvas"]
+        increment = 0
+        VIDEOS_LISTED = []
+
+        for (name, video_id) in results:
+
+            video = Video(master = secondary_canvas, video_id = video_id, x = 70, y = 55 + 105*increment, selected = "2")
+            video.get_video()
+            video.draw_self()
+            VIDEOS_LISTED.append(video)
+
+            increment += 1
+
+        popup = Error(message = "Video Search complete! :D", title = "Good news!", name = "popup")      
+        popup.popup()
+        # print(VIDEOS_LISTED)
 
     clear_canvas()
     
@@ -500,6 +523,13 @@ def download_button() -> None:
         elif SEARCH_TYPE.get() == 3:
             download_search()
 
+    def download_videos_in_playlist(path = "") -> None:
+        for video in VIDEOS_LISTED:
+            want_download = video.check_printable()
+
+            if want_download == "1":
+                ffmpeg_script.download_video(video_code = video.video_id, path = path)
+
     def download_video() -> None:
         path = retrieve_path()
         video = retrieve_video()
@@ -526,16 +556,8 @@ def download_button() -> None:
 
     def download_playlist() -> None:
 
-        def download_videos_in_playlist() -> None:
-            for video in VIDEOS_LISTED:
-                want_download = video.check_printable()
-
-                if want_download == "1":
-                    ffmpeg_script.download_video(video_code = video.video_id, path = path)
-
         path = retrieve_path()
 
-        
         if len(VIDEOS_LISTED) == 0:
             error = Error(message = "No playlist or videos have been searched!", name = "popup")
             error.popup()
@@ -550,14 +572,32 @@ def download_button() -> None:
             message.popup()
             root.update()
 
-        root.after(1000, download_videos_in_playlist())
+        root.after(1000, download_videos_in_playlist(path=path))
 
         popup = Error(message = "Playlist download complete!", title = "Good news!", name = "popup")
         popup.popup()
 
-
     def download_search() -> None:
-        print("Also Testing :D")
+        path = retrieve_path()
+
+        if len(VIDEOS_LISTED) == 0:
+            error = Error(message = "No videos have been searched!", name = "popup")
+            error.popup()
+            root.update()
+            return
+        elif path == "":
+            error = Error(title = "Warning!", message = f"Default download location selected: {Path.home()}", name = "popup")            
+            error.popup()
+            root.update()
+        else:
+            message = Error(title ="Don't Worry!", message = "Download has begun. Be patient, this may take a while.", name = "popup")
+            message.popup()
+            root.update()
+
+        root.after(1000, download_videos_in_playlist(path= path))
+        popup = Error(message = "Download complete!", title = "Good news!", name = "popup")
+        popup.popup()
+
     
     tkinter.Button(root, text = "DOWNLOAD", name = "download", width = 50, height = 2, 
                     command = download).place(x = 25, y = 450)
@@ -653,7 +693,8 @@ def make_video_display(master:canvas, video_id:str, x:int, y:int):
 def test_button():
     def print_widget(name: str):
         #DEPRECATED
-        print(find_widgets_by_name(name).get())
+        # print(find_widgets_by_name(name).get())
+        pass
 
     def place_video():
         #DEPRECATED

@@ -254,19 +254,33 @@ def help_me() -> None:
         
         pop_up = tkinter.Tk()
         pop_up.wm_title("Helper")
-        label = tkinter.Label(pop_up, text = msg, font = norm_font, width = 75, height = 13)
+        label = tkinter.Label(pop_up, text = msg, font = norm_font, width = 75, height = 25)
 
         label.pack(side= "right", fill = "x", pady = 10)
 
     message = """
     Instructions: 
-    Gosh I sure bet you wish this was useful huh
+    Get an API Key with https://developers.google.com/youtube/v3/getting-started
+    Follow the instruction at the link, then input a Youtube V3 youtube API key 
+    Use to "Browse" button to select a download location
 
-    Search by Video mode:
+    Video mode:
+    Provide a youtube video ID or link. 
+    Use the "SEARCH" button (optional), then download.
+    *Note: In this mode the user can download without an API key. 
+    **Note: Without an API key, the "SEARCH" button will be non-functional.
 
-    Search by Playlist mode:
+    Playlist mode:
+    Input youtube playlist ID or link.
+    Click the "SEARCH" button to find the playlist.
+    Change the check mark to "X" to not download a video.
+    Click the "DOWNLOAD" button to download all wanted videos.
 
-    Search for Video mode:
+    Search mode:
+    Search for videos using the search bar. 
+    Click the "SEARCH" button, and wait for results.
+    Scroll through the results, and find the video you wanted to download.
+    On the wanted video, change the "X" button to the check mark, then click "DOWNLOAD"
     """
     popup_message(message)
 

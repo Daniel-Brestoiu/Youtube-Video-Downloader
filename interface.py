@@ -31,7 +31,7 @@ EYE_MODE = 0
 VIDEOS_LISTED = []
 
 class Thumbnail_Image():
-    def __init__(self, url: str = None, temp_file: IO[Any] = None, scale: int = None, width: int = None, height: int = None, image = None, overlord = None):
+    def __init__(self, url: str = None, temp_file: IO[Any] = None, scale: int = None, width: int = None, height: int = None, image: tkinter.PhotoImage = None, overlord = None):
         global THUMBNAILS_LIST
 
         self.url = url
@@ -66,7 +66,7 @@ class Thumbnail_Image():
             self.temp_file.close()
 
 class Error():
-    def __init__(self, master = root, title:str = "Error", message:str = "Error", name:str = None, frame = None, x_pos = None, y_pos = None):
+    def __init__(self, master = root, title:str = "Error", message:str = "Error", name:str = None, frame: tkinter.Frame = None, x_pos:int = None, y_pos:int = None):
         self.master = master
         self.title = title
         self.message = message
@@ -74,10 +74,10 @@ class Error():
         self.x_pos = x_pos
         self.y_pos = y_pos
 
-    def popup(self):
+    def popup(self) -> None:
         global SEARCH_TYPE
 
-        def place_frame_math(self):
+        def place_frame_math(self) -> None:
             """Conducts the math necessary to place popup on canvas (in a pretty way :D)"""
 
             my_font = font.Font(family = "Helevetica", size = 13)   #Default is most likely the same font/size as this 
@@ -98,12 +98,14 @@ class Error():
             self.x_pos = x
             self.y_pos = y
 
-        def move_self(self):
+        def move_self(self) -> None:
+            """Places self at given x and y co-ordinates"""
 
             self.frame.place(x = self.x_pos, y = self.y_pos)
             canvas.update()
 
-        def kill_by_name(self):
+        def kill_by_name(self) -> None:
+            """Eliminated other objects with same name. All Error obj should have same name; 'popup' """
             try:
                 fake = find_canvas_widget_by_name(self.name)
                 fake.kill_self(fake)
@@ -120,19 +122,20 @@ class Error():
             colour = "#ffada9"
 
         
-        kill_by_name(self.name) #Removes others with same name. All popups have same name (so far)
+        kill_by_name(self.name)
 
         self.frame = tkinter.Frame(master = canvas, name = self.name, bg = colour, relief = "solid", borderwidth = 2,)
 
         exit_button = tkinter.Button(master= self.frame, text = "X",  command = self.kill_self, highlightbackground = colour,).grid(row = 1, column = 3)       #.place(x = 130, y = 2)
-        error_title = tkinter.Label(master = self.frame, text = self.title, bg = colour).grid(row = 1, column = 1)       #.place(x = 5, y = 5)
+        error_title = tkinter.Label(master = self.frame, text = self.title, bg = colour).grid(row = 1, column = 1)
         filler = tkinter.Label(master = self.frame, text = "", bg = colour).grid(row= 2, column = 1)
-        error_message = tkinter.Label(master = self.frame, text = self.message, bg = colour, ).grid(row = 3, column = 1)     #.place(x= 25, y = 25)
+        error_message = tkinter.Label(master = self.frame, text = self.message, bg = colour, ).grid(row = 3, column = 1)
 
         place_frame_math(self)
         move_self(self)
 
-    def kill_self(self):
+    def kill_self(self) -> None:
+        """Eliminates own existance."""
         self.frame.pack_forget()
         self.frame.destroy()
 
@@ -141,7 +144,7 @@ class Error():
     #Mode 3 popup colour #ffada9
 
 class Video():
-    def __init__(self,  master:canvas, video_id:str, thumbnail:Thumbnail_Image = None, name:str = None, channel:str = None, selected = "1", yes_photo = None, no_photo = None, x:int = 0, y:int = 0, colour = None, video_canvas:canvas = None):
+    def __init__(self,  master:canvas, video_id:str, thumbnail:Thumbnail_Image = None, name:str = None, channel:str = None, selected:str = "1", yes_photo: tkinter.PhotoImage = None, no_photo: tkinter.PhotoImage = None, x:int = 0, y:int = 0, colour:str = None, video_canvas:canvas = None):
         self.master = master
         self.video_id = video_id
         self.thumbnail = thumbnail
@@ -173,7 +176,8 @@ class Video():
         #Colours: Mode2: "#b2a9ff"          Mode3: "#a9ffbc"
         #Colours: Mode2: "#e4e0ff"          Mode3: "#ebffef"
 
-    def get_video(self):
+    def get_video(self) -> None:
+        """Conducts the search for video, updating information about self, or causing error popup."""
         return_value = search_video(video_id = self.video_id, API_KEY= retrieve_key())
         
         if return_value == "Invalid API Key":
@@ -190,7 +194,8 @@ class Video():
         self.name = title
         self.channel = channel_name
 
-    def draw_self(self):
+    def draw_self(self) -> None:
+        """Creates canvas, and draws self on it. Results in rectangular box with thumbnail image, name, channel, and buttons. """
         self.video_canvas = tkinter.Canvas(self.master, width = 430, height = 100, bg = self.colour, highlightthickness = 0, bd = 1, relief = "ridge",)
         self.master.create_window((self.x -66, self.y), window = self.video_canvas, width = 430, height = 100, anchor = "w")
 
@@ -210,10 +215,12 @@ class Video():
 
         self.master.update()
 
-    def destroy_temp_file(self):
+    def destroy_temp_file(self) -> None:
+        """ Proper elimination of thumbnail and temp file of video's associated thumbnail image."""
         self.thumbnail.destroy()
     
-    def check_printable(self):
+    def check_printable(self) -> str:
+        """Returns value for a video's selected attribute. This will be either 1 or 2, representing yes and no respectively."""
         return self.selected.get()
 
 def init_screen() -> None:
@@ -248,6 +255,7 @@ def select_path() -> None:
     entry.insert(0, directory)
 
 def help_me() -> None:
+    """ Makes a new window which is used to display help instructions."""
 
     def popup_message(msg):
         norm_font = ("Helvetica", 13)
@@ -284,7 +292,6 @@ def help_me() -> None:
     """
     popup_message(message)
 
-#Different search mode fellas
 def mode_buttons() -> None:
     """Creates the Radiobuttons which control search types"""
     global SEARCH_TYPE
@@ -318,6 +325,7 @@ def video_search_screen():
     """Changes canvas to video search mode"""
 
     def search() -> None:
+        """ Conducts search for a video, using api_logic import. Pops up error if applicable, otherwise updates thumbnail image, video title and channel name"""
 
         video_id = get_video_id()
         video_link = get_video_link()
@@ -385,12 +393,14 @@ def video_search_screen():
 
 def playlist_search_screen() -> None:
     """Changes canvas to playlist search mode"""
-    # Searching by channel and channel ID is inconsistent on youtube API, will not include as feature
     # Search by playlist ID, and link to a video in the playlist.
     # Creates scroll box of the videos in playlist, including thumbnail, name, channel, and a check/x box for including in downloads
     global VIDEOS_LISTED
 
-    def search():
+    def search() -> None:
+        """ Conducts search for youtube playlist, popping up an error if applicable. Otherwise kills previous scroll field, and
+        creates a new, resized one which hosts all the videos of the playlist. Pops up completion poppup.  """
+
         global VIDEOS_LISTED
         id_input = find_canvas_widget_by_name("playlist id input").get()
         link_input = find_canvas_widget_by_name("playlist link input").get()
@@ -409,9 +419,7 @@ def playlist_search_screen() -> None:
             error.popup()
             return
         else:
-            #No invalid input, result must make sense
             num_videos = len(result)
-            # print(result)
 
             #7 + 100 pixels for padding for each video, + 7 padding at the very end
             height_of_scroll_field = 105*num_videos + 4
@@ -424,7 +432,6 @@ def playlist_search_screen() -> None:
             VIDEOS_LISTED = []
             for num in range(len(result)):
                 video_id = result[num]
-                # print(video_id)
 
                 secondary_canvas = find_canvas_widget_by_name("holder frame").children["secondary canvas"]
 
@@ -451,13 +458,14 @@ def playlist_search_screen() -> None:
     make_scroll_field(x = 20, y = 130, scroll_height= 300)
     canvas.update()
 
-def make_scroll_field(x, y, scroll_height:int, height:int = 170) -> None:
+def make_scroll_field(x:int, y:int, scroll_height:int, height:int = 170) -> None:
+    """ Given information for position, scroll depth and height, creates what amounts to a scrollable canvas as specified in input parameters. """
 
     colour1 = "#aaaaaa"
     colour2 = "#aaaaaa"
 
     if SEARCH_TYPE.get() == 2:
-        colour1 = "#a696ff"
+        colour1 = "#b2a9ff"
         colour2 = "#e3d4ff"
     elif SEARCH_TYPE.get() == 3:
         colour1 = "#a9ffbc"
@@ -481,7 +489,9 @@ def make_scroll_field(x, y, scroll_height:int, height:int = 170) -> None:
 def youtube_search_screen() -> None:
     """Changes canvas to general youtube search mode"""
     
-    def search():
+    def search() -> None:
+        """ Conducts general search query to youtube and displays the found Video objects on scrollable canvas. Finally causes popup indicating completion. """
+
         global VIDEOS_LISTED
         search_input = find_canvas_widget_by_name(name = "youtube search field").get()
         api_key_input = find_widgets_by_name("api_input").get()
@@ -510,12 +520,10 @@ def youtube_search_screen() -> None:
 
         popup = Error(message = "Video Search complete! :D", title = "Good news!", name = "popup")      
         popup.popup()
-        # print(VIDEOS_LISTED)
 
     clear_canvas()
     
-    canvas["background"] = "#a9ffbc" #This colour is pretty yuck
-    # also consider: ffb2a9
+    canvas["background"] = "#a9ffbc" 
 
     make_scroll_field(x = 20, y = 95, scroll_height = 300, height = 200)
 
@@ -526,6 +534,8 @@ def youtube_search_screen() -> None:
     canvas.update()
 
 def delete_scroll_field() -> None:
+    """ Finds currently existing scroll field and destroys it, along with its children."""
+    clear_thumbnails()
     holder_frame = find_canvas_widget_by_name("holder frame")
     holder_frame.destroy()
     
@@ -548,19 +558,21 @@ def clear_thumbnails() -> None:
     THUMBNAILS_LIST = []
 
 
-#Download button and his homie functions
 def download_button() -> None:
     """Places download button on app. Also contains download function."""
 
     def download() -> None:
+        """ Figures out which search mode is active, and calls relevant download proceduce"""
         if SEARCH_TYPE.get() == 1:
             download_video()
         elif SEARCH_TYPE.get() == 2:
             download_playlist()
         elif SEARCH_TYPE.get() == 3:
-            download_search()
+            download_playlist()
 
-    def download_videos_in_playlist(path = "") -> None:
+    def download_videos_in_playlist(path:str = "") -> None:
+        """ Downloads all wanted videos in currently known, listed videos"""
+
         for video in VIDEOS_LISTED:
             want_download = video.check_printable()
 
@@ -568,6 +580,7 @@ def download_button() -> None:
                 ffmpeg_script.download_video(video_code = video.video_id, path = path)
 
     def download_video() -> None:
+        """ Uses known inputs for path and video to download video to location indicated by path. """
         path = retrieve_path()
         video = retrieve_video()
         
@@ -592,7 +605,7 @@ def download_button() -> None:
         popup.popup()
 
     def download_playlist() -> None:
-
+        """ Handles potential errors then calls download_videos_in_playlist() using a known path input """
         path = retrieve_path()
 
         if len(VIDEOS_LISTED) == 0:
@@ -611,30 +624,8 @@ def download_button() -> None:
 
         root.after(1000, download_videos_in_playlist(path=path))
 
-        popup = Error(message = "Playlist download complete!", title = "Good news!", name = "popup")
-        popup.popup()
-
-    def download_search() -> None:
-        path = retrieve_path()
-
-        if len(VIDEOS_LISTED) == 0:
-            error = Error(message = "No videos have been searched!", name = "popup")
-            error.popup()
-            root.update()
-            return
-        elif path == "":
-            error = Error(title = "Warning!", message = f"Default download location selected: {Path.home()}", name = "popup")            
-            error.popup()
-            root.update()
-        else:
-            message = Error(title ="Don't Worry!", message = "Download has begun. Be patient, this may take a while.", name = "popup")
-            message.popup()
-            root.update()
-
-        root.after(1000, download_videos_in_playlist(path= path))
         popup = Error(message = "Download complete!", title = "Good news!", name = "popup")
         popup.popup()
-
     
     tkinter.Button(root, text = "DOWNLOAD", name = "download", width = 50, height = 2, 
                     command = download).place(x = 25, y = 450)
@@ -669,16 +660,16 @@ def retrieve_video() -> Tuple[str,str]:
 
     
 
-def find_widgets_by_name(name: str):
+def find_widgets_by_name(name: str) -> Any:
     """Returns the widget that was named in input."""
     return root.children[name]
 
-def find_canvas_widget_by_name(name:str):
+def find_canvas_widget_by_name(name:str) -> Any:
     return root.children["canvas"].children[name]
 
 
 #Helpful photo friends
-def resize_image(image_location: str, height: int, width: int):
+def resize_image(image_location: str, height: int, width: int) -> tkinter.PhotoImage:
     """Given file location, and height/width inputs, shrinks image by a factor of the input. Ex: Current = 120 and 90, input = 10,10 -> result = 12, 9. Returns resized image. """
     image = tkinter.PhotoImage(file = image_location)
 
@@ -710,8 +701,6 @@ def swap_entry_mode() -> None:
         button["image"] = EYE_CLOSED_IMAGE
         EYE_MODE = 0
         api_entry.config(show ="")
-    
-    #Show does not change the contents of the entry input.
 
 def globalize_images() -> None:
     """Resizes permanent images. Returns None."""
@@ -721,23 +710,23 @@ def globalize_images() -> None:
     EYE_OPEN_IMAGE = resize_image("password eye open.png", 20, 20)
     EYE_CLOSED_IMAGE = resize_image("password eye closed.png", 20, 20 )
 
-def make_video_display(master:canvas, video_id:str, x:int, y:int):
+def make_video_display(master:canvas, video_id:str, x:int, y:int) -> None:
     video = Video(master = master, video_id = video_id, x = x, y = y)
     video.get_video()
     video.draw_self()
 
-#Experiment bois
-def test_button():
-    def print_widget(name: str):
+def test_button() -> None:
+    """ Deprecated. Previously creates button used to test functions."""
+    def print_widget(name: str) -> None:
         #DEPRECATED
         # print(find_widgets_by_name(name).get())
         pass
 
-    def place_video():
-        #DEPRECATED
+    def place_video(test_video_id:str) -> None:
+        """ Deprecated. """
         secondary_canvas = find_canvas_widget_by_name("holder frame").children["secondary canvas"]
 
-        test_video = Video(master = secondary_canvas, video_id = "wHAFcQY7PbM", x = 70, y = 55)
+        test_video = Video(master = secondary_canvas, video_id = test_video_id, x = 70, y = 55)
         test_video.get_video()
         test_video.draw_self()
     
@@ -746,19 +735,12 @@ def test_button():
     # error = Error(message= "This is a sample of what an error message might be" , name = "popup")
     # tkinter.Button(root, text = "test", command = place_video).place(x= 400, y = 100)
 
-def enumyrate(iterable: Iterable):
-    counter = 0
-    for x in iterable:
-        yield counter, x
-        counter +=1
 
-
-#The main man :DD
-def main():
+def main() -> None:
+    """ Program :)"""
     globalize_images()
     init_screen()
 
-    test_button()
     mode_buttons()
     show_mode()
     download_button()

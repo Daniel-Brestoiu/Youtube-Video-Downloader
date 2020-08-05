@@ -29,8 +29,8 @@ THUMBNAILS_LIST = []
 SEARCH_TYPE = tkinter.IntVar()
 SEARCH_TYPE.set(1)
 
-EYE_CLOSED_IMAGE = tkinter.PhotoImage(file = "password eye closed.png") # Mode 0
-EYE_OPEN_IMAGE = tkinter.PhotoImage(file = "password eye open.png") # Mode 1 
+EYE_CLOSED_IMAGE = tkinter.PhotoImage(file = "password_eye_closed.png") # Mode 0
+EYE_OPEN_IMAGE = tkinter.PhotoImage(file = "password_eye_open.png") # Mode 1 
 EYE_MODE = 0
 
 VIDEOS_LISTED = []
@@ -712,8 +712,8 @@ def globalize_images() -> None:
     global EYE_OPEN_IMAGE
     global EYE_CLOSED_IMAGE
 
-    EYE_OPEN_IMAGE = resize_image("password eye open.png", 20, 20)
-    EYE_CLOSED_IMAGE = resize_image("password eye closed.png", 20, 20 )
+    EYE_OPEN_IMAGE = resize_image("password_eye_open.png", 20, 20)
+    EYE_CLOSED_IMAGE = resize_image("password_eye_closed.png", 20, 20 )
 
 def make_video_display(master:canvas, video_id:str, x:int, y:int) -> None:
     video = Video(master = master, video_id = video_id, x = x, y = y)

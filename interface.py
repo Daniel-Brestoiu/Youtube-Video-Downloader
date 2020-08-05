@@ -1,6 +1,7 @@
 import re
 import googleapiclient
 import os
+import sys
 import subprocess
 
 import urllib.request
@@ -20,6 +21,12 @@ from functools import partial
 from PIL import Image, ImageTk
 from googleapiclient.discovery import build
 
+# current_directory = os.getcwd()
+if getattr(sys, 'frozen', False):
+    current_directory = os.path.dirname(sys.argv[0])
+elif __file__:
+    current_directory = os.path.dirname(__file__)
+
 root = tkinter.Tk()
 canvas = tkinter.Canvas(root, name = "canvas", width = 485, height = 300, )
 canvas.place(x = 5, y= 135)
@@ -29,8 +36,8 @@ THUMBNAILS_LIST = []
 SEARCH_TYPE = tkinter.IntVar()
 SEARCH_TYPE.set(1)
 
-EYE_CLOSED_IMAGE = tkinter.PhotoImage(file = "password_eye_closed.png") # Mode 0
-EYE_OPEN_IMAGE = tkinter.PhotoImage(file = "password_eye_open.png") # Mode 1 
+EYE_CLOSED_IMAGE = tkinter.PhotoImage(file = f"{current_directory}/images/password_eye_closed.png") # Mode 0
+EYE_OPEN_IMAGE = tkinter.PhotoImage(file = f"{current_directory}/images/password_eye_open.png") # Mode 1 
 EYE_MODE = 0
 
 VIDEOS_LISTED = []
@@ -169,8 +176,8 @@ class Video():
         self.thumbnail = thumbnail
 
         #Making check and x buttons' image
-        self.yes_photo = resize_image("check_mark.png", 10, 10)
-        self.no_photo = resize_image("x_mark.png", 10, 10)
+        self.yes_photo = resize_image(f"{current_directory}/images/check_mark.png", 10, 10)
+        self.no_photo = resize_image(f"{current_directory}/images/x_mark.png", 10, 10)
 
         #Setting background
         current_mode = SEARCH_TYPE.get()
@@ -376,7 +383,7 @@ def video_search_screen():
     clear_canvas()
     canvas["background"] = "#A9EDFF"
 
-    photo = resize_image("placeholder_image.png", 100, 100)
+    photo = resize_image(f"{current_directory}/images/placeholder_image.png", 100, 100)
     placeholder_thumbnail = Thumbnail_Image(scale = 100, image = photo)
     placeholder_thumbnail.place_thumbnail_from_image()
 
@@ -712,8 +719,8 @@ def globalize_images() -> None:
     global EYE_OPEN_IMAGE
     global EYE_CLOSED_IMAGE
 
-    EYE_OPEN_IMAGE = resize_image("password_eye_open.png", 20, 20)
-    EYE_CLOSED_IMAGE = resize_image("password_eye_closed.png", 20, 20 )
+    EYE_OPEN_IMAGE = resize_image(f"{current_directory}/images/password_eye_open.png", 20, 20)
+    EYE_CLOSED_IMAGE = resize_image(f"{current_directory}/images/password_eye_closed.png", 20, 20 )
 
 def make_video_display(master:canvas, video_id:str, x:int, y:int) -> None:
     video = Video(master = master, video_id = video_id, x = x, y = y)

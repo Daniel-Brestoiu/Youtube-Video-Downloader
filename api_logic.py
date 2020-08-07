@@ -36,57 +36,6 @@ def find_videos_in_playlist(playlistID: str, API_KEY:str) -> List[str]:
 
     return videos_list
 
-
-def check_file_codes(file_name: str) -> List[str]:
-    """Opens or Creates a file named after input parameter. 
-    Reads the lines of the file, returning list of enter separated lines."""
-
-    assert type(file_name) == str, "Improper file name input."
-
-    try:
-        handle = open(file_name, "r")
-    except:
-        new_file = open(file_name, "x")
-        new_file.close()
-        print("Made new file.")
-        handle = open(file_name, "r")
-
-    file_contents = handle.readlines()
-    downloaded_codes: List[str] = []
-    for line in file_contents:
-        downloaded_codes.append(line.rstrip())
-    handle.close()
-
-    return downloaded_codes
-
-
-def cull_codes(video_codes: List[str], downloaded_codes: List[str]) -> List[str]:
-    """Given two lists of strings, where the second list is a subset of the first, returns the first list without the subset."""
-
-    unique_codes = []
-    for x in video_codes:
-        if x not in downloaded_codes:
-            unique_codes.append(x)
-
-    return unique_codes
-
-
-def find_unique_codes(new_video_codes: List[str]) -> List[str]:
-    """Given list, returns a subset of the list which does not contain duplicates from a known file, downloads.txt"""
-
-    unique_codes = cull_codes(new_video_codes, check_file_codes("downloads.txt"))
-    return unique_codes
-
-
-def write_to_file(file_name: str, codes_list: List[str]) -> None:
-    """Given file name and a list, appends to the file all items in the list as a string."""
-
-    file_handle = open(file_name, "a")
-    for x in codes_list:
-        file_handle.write("\n" + x)
-
-    file_handle.close()
-
 def search_video(API_KEY:str, video_id: str, video_link: str = None, ) -> List[str]:
     """Given a youtube video identifier, finds the video in question.
     Downloads the video thumbnail as image
@@ -141,9 +90,7 @@ def search_video(API_KEY:str, video_id: str, video_link: str = None, ) -> List[s
             except:
                 return "Invalid Video Info"
 
-
     #Thumbnail at https://img.youtube.com/vi/<insert-youtube-video-id-here>/default.jpg
-
     return info
 
 def parse_for_playlist_id(playlist_link:str)-> str:
@@ -155,7 +102,6 @@ def parse_for_playlist_id(playlist_link:str)-> str:
     except:
         #Not valid link
         pass
-
     return None
 
 def find_playlist(API_KEY:str, playlist_id:str , playlist_link_id:str = None) -> List[str]:
@@ -235,11 +181,6 @@ def get_next_page(response:dict, YOUTUBE:build, playlist_id:str) -> List[str]:
 
     except:
         return ["Done"]
-
-def download_playlist(playlistID: str, API_KEY:str) -> None:
-    codes = find_unique_codes(find_videos_in_playlist((playlistID), API_KEY = API_KEY))
-    write_to_file("downloads.txt", codes)
-    download_videos(codes)
 
 def main():
     pass

@@ -21,7 +21,7 @@ from functools import partial
 from PIL import Image, ImageTk
 from googleapiclient.discovery import build
 
-# current_directory = os.getcwd()
+current_directory = os.getcwd()
 if getattr(sys, 'frozen', False):
     current_directory = os.path.dirname(sys.argv[0])
 elif __file__:

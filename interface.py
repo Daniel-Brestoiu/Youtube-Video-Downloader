@@ -24,8 +24,8 @@ from googleapiclient.discovery import build
 current_directory = os.getcwd()
 if getattr(sys, 'frozen', False):
     current_directory = os.path.dirname(sys.argv[0])
-elif __file__:
-    current_directory = os.path.dirname(__file__)
+else:
+    current_directory = Path(__file__).resolve().parent
 
 root = tkinter.Tk()
 canvas = tkinter.Canvas(root, name = "canvas", width = 485, height = 300, )

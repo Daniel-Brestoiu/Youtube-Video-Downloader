@@ -57,5 +57,5 @@ Daniel Brestoiu
 ![Download Video](Example-Screenshots/video_found_youtube_video_downloader.png)
 ![Download Playlist](Example-Screenshots/playlist_found_youtube_video_downloader.png)
 ![Download Searched Video](Example-Screenshots/search_youtube_video_downloader.png)
-![Select Path](Example-Screenshots/path_selection_youtube_video_downloader.png)
+![Select Path](Example-Screenshots/path_selection_video_downloader.png)
 ![Initial Screen](Example-Screenshots/start_screen_youtube_video_downloader.png)

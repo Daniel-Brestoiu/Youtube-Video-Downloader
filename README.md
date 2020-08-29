@@ -38,10 +38,15 @@ This was my second project, and I am quite proud of it. I have found it to be us
 
 ##### Built With:
 Tkinter + PIL - GUI
+
 Youtube-dl - Downloading
+
 googleapiclient - Searching + Youtube API access
+
 tempfile - Temporary resource management
+
 urllib - Data gathering
+
 pathlib - Path management
 
 ##### Versioning:

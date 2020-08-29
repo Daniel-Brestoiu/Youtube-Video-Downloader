@@ -8,14 +8,14 @@ Control of youtube-dl
     - (youtube-dl) (-o for output)(output location) (-f for format) (format type)/(quality type) (url)
 """
 
-def download_videos(unique_codes_list: List[str], path: str) -> None:
+def download_videos(unique_codes_list: List[str], path: str, format:str = "mp4") -> None:
     """Given a list of unique video codes, downloads them all using the download_video(video_code, format = "mp4") function."""
     if path == "":
         path = Path.home()
 
     for x in unique_codes_list:
         assert type(x) == str, "Improper code."
-        download_video(video_code=x, path = path)
+        download_video(video_code=x, path = path, format= format)
 
 def download_video(video_code: str, path: str = f"{Path.home()}", format: str = "mp4",) -> None:
     """

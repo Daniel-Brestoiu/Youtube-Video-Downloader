@@ -36,6 +36,9 @@ THUMBNAILS_LIST = []
 SEARCH_TYPE = tkinter.IntVar()
 SEARCH_TYPE.set(1)
 
+download_type = tkinter.StringVar()
+download_type.set("")
+
 EYE_CLOSED_IMAGE = tkinter.PhotoImage(file = f"{current_directory}/images/password_eye_closed.png") # Mode 0
 EYE_OPEN_IMAGE = tkinter.PhotoImage(file = f"{current_directory}/images/password_eye_open.png") # Mode 1 
 EYE_MODE = 0
@@ -237,6 +240,20 @@ class Video():
 
 def init_screen() -> None:
     """Creates the general screen of app"""
+    global download_type
+
+    def download_type_selection() -> None:
+        global download_type
+
+        download_formats = [
+            "mp4",
+            "m4a",
+            "webm", 
+        ]
+        download_type.set(download_formats[0])
+
+        drop = tkinter.OptionMenu(root, download_type, *download_formats)
+        drop.place(x = 375, y= 100)
 
     root.title("Youtube Video Downloader")
 
@@ -254,6 +271,8 @@ def init_screen() -> None:
     tkinter.Button(root, name = "path_button", text = "Browse", width = 8, command = select_path).place(x = 415, y = 53)
     tkinter.Button(root, name = "secret_button", image = EYE_CLOSED_IMAGE, command = swap_entry_mode).place(x = 466, y = 12)
     tkinter.Button(root, name = "help button", text = "HELP", width = 5, pady= 5, command= help_me).place(x= 445, y = 97)
+
+    download_type_selection()
 
 def select_path() -> None:
     """Opens popup prompting user to pick a directory. Fills 'path' entry widget with path."""
@@ -582,19 +601,20 @@ def download_button() -> None:
         elif SEARCH_TYPE.get() == 3:
             download_playlist()
 
-    def download_videos_in_playlist(path:str = "") -> None:
+    def download_videos_in_playlist(path:str = "", format:str = "mp4") -> None:
         """ Downloads all wanted videos in currently known, listed videos"""
 
         for video in VIDEOS_LISTED:
             want_download = video.check_printable()
 
             if want_download == "1":
-                ffmpeg_script.download_video(video_code = video.video_id, path = path)
+                ffmpeg_script.download_video(video_code = video.video_id, path = path, format = format)
 
     def download_video() -> None:
         """ Uses known inputs for path and video to download video to location indicated by path. """
         path = retrieve_path()
         video = retrieve_video()
+        selected_format = retrieve_format()
         
         if video == "Invalid Video Info":
             error = Error(message = "Please input valid video information.", name = "popup")
@@ -611,7 +631,7 @@ def download_button() -> None:
             root.update()
             canvas.update()
 
-        root.after(1000, download_videos(video, path= path))
+        root.after(1000, download_videos(video, path= path, format = selected_format))
 
         popup = Error(message = "Video download complete!", title = "Good news!", name = "popup")
         popup.popup()
@@ -619,6 +639,7 @@ def download_button() -> None:
     def download_playlist() -> None:
         """ Handles potential errors then calls download_videos_in_playlist() using a known path input """
         path = retrieve_path()
+        selected_format = retrieve_format()
 
         if len(VIDEOS_LISTED) == 0:
             error = Error(message = "No playlist or videos have been searched!", name = "popup")
@@ -634,7 +655,7 @@ def download_button() -> None:
             message.popup()
             root.update()
 
-        root.after(1000, download_videos_in_playlist(path=path))
+        root.after(1000, download_videos_in_playlist(path=path, format = selected_format))
 
         popup = Error(message = "Download complete!", title = "Good news!", name = "popup")
         popup.popup()
@@ -650,6 +671,10 @@ def retrieve_key() -> str:
 def retrieve_path() -> str:
     """Retrieves the input from download path entry field"""
     return str(find_widgets_by_name("path").get())
+
+def retrieve_format() ->str:
+    """Retrieves the input from the format selection option menu"""
+    return str(download_type.get())
 
 def retrieve_video() -> Tuple[str,str]:
     """Calls regex to find video id from an inputted video link. Returns a tuple of video ids from input and parsed from link, respectively. """

@@ -31,10 +31,10 @@ root = tkinter.Tk()
 canvas = tkinter.Canvas(root, name = "canvas", width = 485, height = 300, )
 canvas.place(x = 5, y= 135)
 
-THUMBNAILS_LIST = []
+thumbnails_list = []
 
-SEARCH_TYPE = tkinter.IntVar()
-SEARCH_TYPE.set(1)
+search_type = tkinter.IntVar()
+search_type.set(1)
 
 download_type = tkinter.StringVar()
 download_type.set("")
@@ -43,11 +43,11 @@ EYE_CLOSED_IMAGE = tkinter.PhotoImage(file = f"{current_directory}/images/passwo
 EYE_OPEN_IMAGE = tkinter.PhotoImage(file = f"{current_directory}/images/password_eye_open.png") # Mode 1 
 EYE_MODE = 0
 
-VIDEOS_LISTED = []
+videos_listed = []
 
 class Thumbnail_Image():
     def __init__(self, url: str = None, temp_file: IO[Any] = None, scale: int = None, width: int = None, height: int = None, image: tkinter.PhotoImage = None, overlord = None):
-        global THUMBNAILS_LIST
+        global thumbnails_list
 
         self.url = url
         self.temp_file = temp_file
@@ -57,7 +57,7 @@ class Thumbnail_Image():
         self.image = image
         self.overlord = overlord
 
-        THUMBNAILS_LIST.append(self)
+        thumbnails_list.append(self)
 
     
     def download_from_url(self) -> None:
@@ -90,7 +90,7 @@ class Error():
         self.y_pos = y_pos
 
     def popup(self) -> None:
-        global SEARCH_TYPE
+        global search_type
 
         def place_frame_math(self) -> None:
             """Conducts the math necessary to place popup on canvas (in a pretty way :D)"""
@@ -128,7 +128,7 @@ class Error():
                 #Means this is the first error popup. Others do have not been made yet.
                 pass
 
-        mode = SEARCH_TYPE.get()
+        mode = search_type.get()
         if mode == 1:
             colour = "#ffc3a9"
         elif mode == 2:
@@ -183,7 +183,7 @@ class Video():
         self.no_photo = resize_image(f"{current_directory}/images/x_mark.png", 10, 10)
 
         #Setting background
-        current_mode = SEARCH_TYPE.get()
+        current_mode = search_type.get()
         if current_mode == 2:
             self.colour = "#e4e0ff"
         elif current_mode == 3:
@@ -325,7 +325,7 @@ def help_me() -> None:
 
 def mode_buttons() -> None:
     """Creates the Radiobuttons which control search types"""
-    global SEARCH_TYPE
+    global search_type
 
     modes = [
         ("Video", 1),
@@ -336,13 +336,13 @@ def mode_buttons() -> None:
     for val, (button_name, button_ID)  in enumerate(modes):
         x_pos = 10 + (100*(val))
         tkinter.Radiobutton(root, text = button_name, padx = 1, pady = 5, indicatoron = 0, 
-                            variable = SEARCH_TYPE, width = 10, value = button_ID, 
+                            variable = search_type, width = 10, value = button_ID, 
                             command = lambda: show_mode()).place(x = x_pos, y = 97)
 
 def show_mode() -> None:
     """Interprets which radio button is pressed and calls the function to create its search type"""
 
-    selected_mode = SEARCH_TYPE.get()
+    selected_mode = search_type.get()
     # Video = 1, Playlist = 2, Search = 3
 
     if selected_mode == 1:
@@ -426,13 +426,13 @@ def playlist_search_screen() -> None:
     """Changes canvas to playlist search mode"""
     # Search by playlist ID, and link to a video in the playlist.
     # Creates scroll box of the videos in playlist, including thumbnail, name, channel, and a check/x box for including in downloads
-    global VIDEOS_LISTED
+    global videos_listed
 
     def search() -> None:
         """ Conducts search for youtube playlist, popping up an error if applicable. Otherwise kills previous scroll field, and
         creates a new, resized one which hosts all the videos of the playlist. Pops up completion poppup.  """
 
-        global VIDEOS_LISTED
+        global videos_listed
         id_input = find_canvas_widget_by_name("playlist id input").get()
         link_input = find_canvas_widget_by_name("playlist link input").get()
         api_key_input = find_widgets_by_name("api_input").get()
@@ -460,7 +460,7 @@ def playlist_search_screen() -> None:
 
             make_scroll_field(x= 20, y= 130, scroll_height = height_of_scroll_field)
 
-            VIDEOS_LISTED = []
+            videos_listed = []
             for num in range(len(result)):
                 video_id = result[num]
 
@@ -470,7 +470,7 @@ def playlist_search_screen() -> None:
                 video.get_video()
                 video.draw_self()
 
-                VIDEOS_LISTED.append(video)
+                videos_listed.append(video)
 
             popup = Error(message = "Playlist Search complete! :D", title = "Good news!", name = "popup")      
             popup.popup()
@@ -495,10 +495,10 @@ def make_scroll_field(x:int, y:int, scroll_height:int, height:int = 170) -> None
     colour1 = "#aaaaaa"
     colour2 = "#aaaaaa"
 
-    if SEARCH_TYPE.get() == 2:
+    if search_type.get() == 2:
         colour1 = "#b2a9ff"
         colour2 = "#e3d4ff"
-    elif SEARCH_TYPE.get() == 3:
+    elif search_type.get() == 3:
         colour1 = "#a9ffbc"
         colour2 = "#d4fff7"
         
@@ -523,7 +523,7 @@ def youtube_search_screen() -> None:
     def search() -> None:
         """ Conducts general search query to youtube and displays the found Video objects on scrollable canvas. Finally causes popup indicating completion. """
 
-        global VIDEOS_LISTED
+        global videos_listed
         search_input = find_canvas_widget_by_name(name = "youtube search field").get()
         api_key_input = find_widgets_by_name("api_input").get()
         
@@ -538,14 +538,14 @@ def youtube_search_screen() -> None:
 
         secondary_canvas = find_canvas_widget_by_name("holder frame").children["secondary canvas"]
         increment = 0
-        VIDEOS_LISTED = []
+        videos_listed = []
 
         for (name, video_id) in results:
 
             video = Video(master = secondary_canvas, video_id = video_id, x = 70, y = 55 + 105*increment, selected = "2")
             video.get_video()
             video.draw_self()
-            VIDEOS_LISTED.append(video)
+            videos_listed.append(video)
 
             increment += 1
 
@@ -581,12 +581,12 @@ def clear_canvas() -> None:
 
 def clear_thumbnails() -> None:
     """Properly closes temp files of all Thumbnail_Image objects. Unlinks reference to all Thumbnail_Image objects."""
-    global THUMBNAILS_LIST
+    global thumbnails_list
 
-    for thumbnail in THUMBNAILS_LIST:
+    for thumbnail in thumbnails_list:
         thumbnail.destroy()
     
-    THUMBNAILS_LIST = []
+    thumbnails_list = []
 
 
 def download_button() -> None:
@@ -594,17 +594,17 @@ def download_button() -> None:
 
     def download() -> None:
         """ Figures out which search mode is active, and calls relevant download proceduce"""
-        if SEARCH_TYPE.get() == 1:
+        if search_type.get() == 1:
             download_video()
-        elif SEARCH_TYPE.get() == 2:
+        elif search_type.get() == 2:
             download_playlist()
-        elif SEARCH_TYPE.get() == 3:
+        elif search_type.get() == 3:
             download_playlist()
 
     def download_videos_in_playlist(path:str = "", format:str = "mp4") -> None:
         """ Downloads all wanted videos in currently known, listed videos"""
 
-        for video in VIDEOS_LISTED:
+        for video in videos_listed:
             want_download = video.check_printable()
 
             if want_download == "1":
@@ -641,7 +641,7 @@ def download_button() -> None:
         path = retrieve_path()
         selected_format = retrieve_format()
 
-        if len(VIDEOS_LISTED) == 0:
+        if len(videos_listed) == 0:
             error = Error(message = "No playlist or videos have been searched!", name = "popup")
             error.popup()
             root.update()

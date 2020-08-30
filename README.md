@@ -20,8 +20,9 @@ Some features may have changed between the double-clickable version and the give
 
 
 ### Deployment:
-This app was developed on and for MacOS and has not been tested on other OS.
-While there theoretically should be no issues, this is not a guarentee, and some features may be missing or non-functional.
+This app was developed on and for MacOS. Other operating systems may encounter errors. 
+When run on the WindowsOS the app must be run as administrator, due to the use to temp files. 
+This app has not been tested on Linux OS.
 Please note that the usage of relative pathing means that moving files outside of the given folder will cause errors. 
 For usage instructions, please consult the in-app HELP button. 
 

@@ -9,13 +9,13 @@ Downloading these videos efficiently is now trivial with the Youtube Video Downl
 
 ![Download Video](Example-Screenshots/video_found_youtube_video_downloader.png)
 
-### IMPORTANT NOTE: DEPRECATED
+## IMPORTANT NOTE: DEPRECATED
 Changes to Youtube policy mean this app's functionality will no longer be supported.
 As per Youtube Terms of Service:
 
 > You shall not download any Content unless you see a “download” or similar link displayed by YouTube on the Service for that Content.
 
-### Getting Started:
+## Getting Started:
 Copy the folder and its contents onto your computer. 
 Ensure you have downloaded all prerequisites dictated by requirements.txt
 

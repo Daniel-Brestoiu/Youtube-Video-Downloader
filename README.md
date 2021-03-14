@@ -9,6 +9,12 @@ Downloading these videos efficiently is now trivial with the Youtube Video Downl
 
 ![Download Video](Example-Screenshots/video_found_youtube_video_downloader.png)
 
+### IMPORTANT NOTE: DEPRECATED
+Changes to Youtube policy mean this app's functionality will no longer be supported.
+As per Youtube Terms of Service:
+
+> You shall not download any Content unless you see a “download” or similar link displayed by YouTube on the Service for that Content.
+
 ### Getting Started:
 Copy the folder and its contents onto your computer. 
 Ensure you have downloaded all prerequisites dictated by requirements.txt
@@ -21,13 +27,13 @@ Some features may have changed between the double-clickable version and the give
 
 ### Deployment:
 This app was developed on and for MacOS. Other operating systems may encounter errors. 
-When run on the WindowsOS the app must be run as administrator, due to the use to temp files. 
+When run on Windows the app must be run as administrator, due to the use of temp files. 
 This app has not been tested on Linux OS.
 Please note that the usage of relative pathing means that moving files outside of the given folder will cause errors. 
 For usage instructions, please consult the in-app HELP button. 
 
 
-### Background Info/ Additional Notes:
+### Background Info/Additional Notes:
 This project was created because I typically listen to music off of youtube. I realized that if my internet cut out, I would have no music and be sad.
 Other services offered to download youtube videos for me, but I did not trust them, and thus took matters into my own hands. 
 That being said, the app can download any public youtube videos, not just music. 
